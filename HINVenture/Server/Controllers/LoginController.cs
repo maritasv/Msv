@@ -18,26 +18,29 @@ namespace HINVenture.Server.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public LoginController(IConfiguration configuration,
-                               SignInManager<IdentityUser> signInManager)
+                               UserManager<ApplicationUser> userManager)
         {
             _configuration = configuration;
-            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, false);
+            var user = await _userManager.FindByNameAsync(login.Email);
+            if (user == null) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
 
-            if (!result.Succeeded) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
+            var result = await _userManager.CheckPasswordAsync(user, login.Password);
+
+            if (!result) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
 
             var claims = new[]
             {
-            new Claim(ClaimTypes.Name, login.Email)
-        };
+                new Claim(ClaimTypes.Name, login.Email)
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

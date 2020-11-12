@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HINVenture.Server", "HINVenture\Server\HINVenture.Server.csproj", "{F4D98090-2A6D-4063-BB39-0E84E6F8C53A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HINVenture.Server", "HINVenture\Server\HINVenture.Server.csproj", "{F4D98090-2A6D-4063-BB39-0E84E6F8C53A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HINVenture.Client", "HINVenture\Client\HINVenture.Client.csproj", "{67B2B273-AC41-4BF6-9A72-7541D1771CAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HINVenture.Client", "HINVenture\Client\HINVenture.Client.csproj", "{67B2B273-AC41-4BF6-9A72-7541D1771CAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HINVenture.Shared", "HINVenture\Shared\HINVenture.Shared.csproj", "{EEE55BD5-0626-4364-8EC6-3E96A1D2EBFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HINVenture.Shared", "HINVenture\Shared\HINVenture.Shared.csproj", "{EEE55BD5-0626-4364-8EC6-3E96A1D2EBFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

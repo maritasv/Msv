@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -6,36 +8,34 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Authorization;
 
-namespace HINVenture.Client.Providers
+namespace HINVenture.Client
 {
     public class ApiAuthenticationStateProvider : AuthenticationStateProvider
     {
         private readonly HttpClient _httpClient;
-
         public ApiAuthenticationStateProvider(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public string SavedToken { get; private set; }
+        public string savedToken { get; private set; }
         public void SetToken(string token)
         {
-            SavedToken = token;
+            savedToken = token;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
 
-            if (string.IsNullOrWhiteSpace(SavedToken))
+            if (string.IsNullOrWhiteSpace(savedToken))
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", SavedToken);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
 
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(SavedToken), "jwt")));
+            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
         }
 
         public void MarkUserAsAuthenticated(string email)
@@ -47,7 +47,7 @@ namespace HINVenture.Client.Providers
 
         public void MarkUserAsLoggedOut()
         {
-            SavedToken = "";
+            savedToken = "";
             var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
             var authState = Task.FromResult(new AuthenticationState(anonymousUser));
             NotifyAuthenticationStateChanged(authState);
