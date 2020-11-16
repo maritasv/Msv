@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,11 +35,17 @@ namespace HINVenture.Server.Controllers
             var result = await _userManager.CheckPasswordAsync(user, login.Password);
 
             if (!result) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
+            var roles = await _userManager.GetRolesAsync(user);
 
-            var claims = new[]
+            var claims = new List<Claim>();
+
+            claims.Add(new Claim(ClaimTypes.Name, login.Email));
+
+            foreach (var role in roles)
             {
-                new Claim(ClaimTypes.Name, login.Email)
-            };
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

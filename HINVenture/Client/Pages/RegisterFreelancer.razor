@@ -1,4 +1,4 @@
-﻿@page "/register"
+﻿@page "/registerfreelancer"
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
 
@@ -51,7 +51,7 @@
     {
         ShowErrors = false;
 
-        var result = await AuthService.Register(RegisterModel);
+        var result = await AuthService.RegisterFreelancer(RegisterModel);
 
         if (result.Successful)
         {
@@ -65,3 +65,4 @@
     }
 
 }
+

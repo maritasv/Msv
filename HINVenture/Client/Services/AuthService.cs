@@ -1,14 +1,9 @@
 ﻿using Blazored.LocalStorage;
 using HINVenture.Shared.Models;
 using Microsoft.AspNetCore.Components.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HINVenture.Client.Services
@@ -28,17 +23,22 @@ namespace HINVenture.Client.Services
             _localStorage = localStorage;
         }
 
-        public async Task<RegisterResult> Register(RegisterModel registerModel)
+        public async Task<RegisterResult> RegisterFreelancer(RegisterModel registerModel)
         {
-            //var response = await _httpClient.PostAsJsonAsync("api/accounts", registerModel);
-            
-
-            var response = await _httpClient.PostAsJsonAsync("api/register", registerModel);
+            var response = await _httpClient.PostAsJsonAsync("api/Register/Freelancer", registerModel);
             return await response.Content.ReadFromJsonAsync<RegisterResult>();
-          
         }
 
-        public async Task<LoginResult> Login(LoginModel loginModel)
+        public async Task<RegisterResult> RegisterCustomer(RegisterModel registerModel)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/Register/Customer", registerModel);
+            return await response.Content.ReadFromJsonAsync<RegisterResult>();
+        }
+
+
+    
+
+    public async Task<LoginResult> Login(LoginModel loginModel)
         {
             
             var response = await _httpClient.PostAsJsonAsync("api/login", loginModel);

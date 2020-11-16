@@ -25,20 +25,19 @@ namespace HINVenture.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] RegisterModel model)
+        [Route("{action}")]
+        public async Task<IActionResult> Freelancer([FromBody] RegisterModel model)
         {
             var newUser = new ApplicationUser { UserName = model.Email, Email = model.Email };
 
             try
             {
                 var result = await _userManager.CreateAsync(newUser, model.Password);
-
+                await _userManager.AddToRoleAsync(newUser, "freelancer");
                 if (!result.Succeeded)
                 {
                     var errors = result.Errors.Select(x => x.Description);
-
                     return Ok(new RegisterResult { Successful = false, Errors = errors });
-
                 }
             }
             catch (Exception ex)
@@ -48,5 +47,28 @@ namespace HINVenture.Server.Controllers
 
             return Ok(new RegisterResult { Successful = true });
         }
-    } 
+
+        [HttpPost]
+        [Route("{action}")]
+        public async Task<IActionResult> Customer([FromBody] RegisterModel model)
+        {
+            var newUser = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            try
+            {
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                await _userManager.AddToRoleAsync(newUser, "customer");
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(x => x.Description);
+                    return Ok(new RegisterResult { Successful = false, Errors = errors });
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return Ok(new RegisterResult { Successful = true });
+        }
+    }
 }
