@@ -1,13 +1,15 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using HINVenture.Shared.Models;
+﻿using HINVenture.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HINVenture.Server.Controllers
 {
@@ -19,11 +21,7 @@ namespace HINVenture.Server.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         public LoginController(IConfiguration configuration,
-<<<<<<< HEAD
-            SignInManager<IdentityUser> signInManager)
-=======
                                UserManager<ApplicationUser> userManager)
->>>>>>> 27857c811214957d9a4ebf14359df42c676ac3d3
         {
             _configuration = configuration;
             _userManager = userManager;
@@ -35,14 +33,9 @@ namespace HINVenture.Server.Controllers
             var user = await _userManager.FindByNameAsync(login.Email);
             if (user == null) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
 
-<<<<<<< HEAD
-            if (!result.Succeeded)
-                return BadRequest(new LoginResult {Successful = false, Error = "Username and password are invalid."});
-=======
             var result = await _userManager.CheckPasswordAsync(user, login.Password);
 
             if (!result) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
->>>>>>> 27857c811214957d9a4ebf14359df42c676ac3d3
 
             var claims = new[]
             {
@@ -61,7 +54,7 @@ namespace HINVenture.Server.Controllers
                 signingCredentials: creds
             );
 
-            return Ok(new LoginResult {Successful = true, Token = new JwtSecurityTokenHandler().WriteToken(token)});
+            return Ok(new LoginResult { Successful = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
     }
 }

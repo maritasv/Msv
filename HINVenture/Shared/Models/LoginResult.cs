@@ -1,4 +1,8 @@
-﻿namespace HINVenture.Shared.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace HINVenture.Shared.Models
 {
     public class LoginResult
     {
