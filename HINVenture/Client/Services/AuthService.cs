@@ -10,6 +10,7 @@ namespace HINVenture.Client.Services
 {
     public class AuthService
     {
+
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
@@ -36,11 +37,11 @@ namespace HINVenture.Client.Services
         }
 
 
-    
 
-    public async Task<LoginResult> Login(LoginModel loginModel)
+
+        public async Task<LoginResult> Login(LoginModel loginModel)
         {
-            
+
             var response = await _httpClient.PostAsJsonAsync("api/login", loginModel);
             var loginResult = await response.Content.ReadFromJsonAsync<LoginResult>();
 
@@ -64,3 +65,5 @@ namespace HINVenture.Client.Services
         }
     }
 }
+
+
