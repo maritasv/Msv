@@ -12,7 +12,6 @@ namespace HINVenture.Server.Data
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
         }
-        public virtual DbSet<Order> Orders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
