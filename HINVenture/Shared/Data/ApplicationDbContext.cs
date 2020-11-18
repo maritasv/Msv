@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 
 
-namespace HINVenture.Server.Data
+namespace HINVenture.Shared.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, UserRoles, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string> >
     {

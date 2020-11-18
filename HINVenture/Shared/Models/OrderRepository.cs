@@ -1,5 +1,4 @@
-﻿using HINVenture.Server.Data;
-using HINVenture.Shared.Models.ViewModels;
+﻿using HINVenture.Shared.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,9 +40,5 @@ namespace HINVenture.Shared.Models
             throw new NotImplementedException();
         }
         
-        public OrderEditViewModel GetOrderEditViewModel(int? id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
