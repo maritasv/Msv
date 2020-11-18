@@ -1,0 +1,46 @@
+﻿@page "/freelancers"
+@using HINVenture.Shared
+@inject HttpClient Http
+
+<h1>Out freelancers</h1>
+
+
+@if (freels == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Specialties</th>
+                <th>Experience</th>
+                <th>Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var freel in freels)
+            {
+                <tr>
+                    <td>@freel.UserName</td>
+                    <td>@freel.Specs</td>
+                    <td></td>
+                    <td>@freel.Rate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private FreelancerUser[] freels;
+
+    FreelancerUser freelObj = new FreelancerUser();
+
+    protected override async Task OnInitializedAsync()
+    {
+        freels = await Http.GetFromJsonAsync<FreelancerUser[]>("Freelancers"); ;
+    }
+}

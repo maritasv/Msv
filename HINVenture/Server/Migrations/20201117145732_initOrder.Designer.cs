@@ -4,14 +4,16 @@ using HINVenture.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HINVenture.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201117145732_initOrder")]
+    partial class initOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,29 +50,29 @@ namespace HINVenture.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "beeb2c8f-12e1-437b-81c3-650f0534e6f6",
-                            ConcurrencyStamp = "ce0ce0ea-f467-4eff-a5a4-3e0b64b22da5",
+                            Id = "7b6ae83f-7415-4019-a968-91996ffeefd8",
+                            ConcurrencyStamp = "ba81feef-316b-4928-a2cb-42b4f47bcee2",
                             Name = "freelancer",
                             NormalizedName = "FREELANCER"
                         },
                         new
                         {
-                            Id = "9025f0a5-2ccc-4698-9918-1dd64fc1845f",
-                            ConcurrencyStamp = "10cc3a5a-9798-4ad9-affb-c558c52f4230",
+                            Id = "b770cad3-db85-4f3c-acf3-fe485a6a7af5",
+                            ConcurrencyStamp = "4c029cf0-e5ea-4535-93f7-ecead879baa7",
                             Name = "customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = "21b38a54-8ffe-4d2a-ae9b-cb319849d8eb",
-                            ConcurrencyStamp = "2509fb65-1a0d-4722-8e15-e3dc897216b2",
+                            Id = "0c50926f-a218-40e5-ba80-21d0062f3072",
+                            ConcurrencyStamp = "c77250b6-cca3-4a07-83f3-ceb4a8faeeb3",
                             Name = "senior",
                             NormalizedName = "SENIOR"
                         },
                         new
                         {
-                            Id = "b978c86f-f9f7-434f-8aac-2ad78b7a93b1",
-                            ConcurrencyStamp = "d1287b77-b839-4846-88ba-856bf8f46e7c",
+                            Id = "3a299381-a50c-4c71-a350-006050077585",
+                            ConcurrencyStamp = "7a9f45b8-e3c0-4c90-bd5c-ccef38393fb4",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         });
@@ -206,9 +208,6 @@ namespace HINVenture.Server.Migrations
 
                     b.Property<DateTime>("PostedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -1,0 +1,85 @@
+﻿@page "/order"
+@using HINVenture.Shared
+@inject HttpClient Http
+<h2> Your orders</h2>
+<hr />
+<table width="100%" style="background:#05163D;color:honeydew">
+    <tr>
+        <td width="14"> </td>
+        <td>
+            <h4> Add New Order</h4>
+        </td>
+        <td> </td>
+        <td align="right">
+            <button class="btn btn-info">Add New Order</button>
+        </td>
+        <td width="10"> </td>
+    </tr>
+    <tr>
+        <td colspan="2"></td>
+    </tr>
+</table>
+<hr />
+@if (showAddrow == true)
+{
+
+}
+<table width="100%" style="background:#0A2464;color:honeydew">
+    <tr>
+        <td width="14"> </td>
+        <td>
+            <h4>Order List</h4>
+        </td>
+
+    </tr>
+    <tr>
+        <td colspan="2"></td>
+    </tr>
+</table>
+
+@if (orders == null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Customerr Name</th>
+                <th>Email</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Speciality</th>
+            </tr>
+        </thead>
+    </table>
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Customerr Name</th>
+                <th>Email</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Speciality</th>
+            </tr>
+        </thead>
+
+    </table>
+}
+
+@code {
+
+
+    string ids = "0";
+    bool showAddrow = false;
+
+    bool loadFailed;
+    private Order[] orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await Http.GetFromJsonAsync<Order[]>("Order");
+    }
+
+}
