@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HINVenture.Shared.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -13,6 +14,7 @@ namespace HINVenture.Shared.Models
         IQueryable<T> GetAll();
         Task Update(T entity);
         Task Remove(T entity);
+        OrderEditViewModel GetOrderEditViewModel(int? id);
         Task Create(T p);
     }
 }

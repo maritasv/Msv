@@ -1,4 +1,5 @@
 ﻿using HINVenture.Server.Data;
+using HINVenture.Shared.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,11 @@ namespace HINVenture.Shared.Models
         }
 
         public Task Update(Order entity)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public OrderEditViewModel GetOrderEditViewModel(int? id)
         {
             throw new NotImplementedException();
         }
