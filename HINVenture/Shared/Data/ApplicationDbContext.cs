@@ -1,4 +1,5 @@
 ﻿using HINVenture.Shared.Models;
+using HINVenture.Shared.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,14 @@ namespace HINVenture.Shared.Data
             builder.Entity<ApplicationRole>().HasData(new IdentityRole { Name = "senior", NormalizedName = "SENIOR", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });
             builder.Entity<ApplicationRole>().HasData(new IdentityRole { Name = "admin", NormalizedName = "ADMIN", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });
 
+            builder.Entity<Speciality>().HasData(new Speciality { Name = "C# developer", Id = 1});
+            builder.Entity<Speciality>().HasData(new Speciality { Name = "Python developer", Id = 2 });
+            builder.Entity<Speciality>().HasData(new Speciality { Name = "Java developer", Id = 3 });
         }
+
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<OrderProgress> OrderProgresses { get; set; }
+        public DbSet<Speciality> Specialities { get; set; }
+        public DbSet<Order> Orders { get; set; }
     }
 }

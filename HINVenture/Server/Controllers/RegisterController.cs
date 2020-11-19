@@ -6,6 +6,8 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using HINVenture.Client;
 using HINVenture.Shared.Models;
+using HINVenture.Shared.Models.Entities;
+using HINVenture.Shared.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

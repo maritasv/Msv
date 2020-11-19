@@ -1,6 +1,24 @@
 ﻿@page "/"
+@inject ApiAuthenticationStateProvider _StateProvider
 
-<h1>Hello, world!</h1>
+@code
+{
+    bool isAuth; 
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await _StateProvider.GetAuthenticationStateAsync();
+        isAuth = state.User.Identity.IsAuthenticated;
+    }
+}
+
+@if (isAuth)
+{
+    <h1>Authorize</h1>
+}
+else
+{
+    <h1>Not Authorize</h1>
+}
 
 Welcome to your new app.
 

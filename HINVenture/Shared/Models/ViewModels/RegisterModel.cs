@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HINVenture.Shared.Models
+namespace HINVenture.Shared.Models.ViewModels
 {
     public class RegisterModel
     {

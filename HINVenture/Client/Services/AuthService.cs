@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using HINVenture.Shared.Models;
+using HINVenture.Shared.Models.ViewModels;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,11 +13,11 @@ namespace HINVenture.Client.Services
     {
 
         private readonly HttpClient _httpClient;
-        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        private readonly ApiAuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
 
         public AuthService(HttpClient httpClient,
-                           AuthenticationStateProvider authenticationStateProvider,
+                           ApiAuthenticationStateProvider authenticationStateProvider,
                            ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
@@ -51,7 +52,8 @@ namespace HINVenture.Client.Services
             }
 
             await _localStorage.SetItemAsync("authToken", loginResult.Token);
-            ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(loginModel.Email);
+            
+            _authenticationStateProvider.MarkUserAsAuthenticated(loginModel.Email);
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
 
             return loginResult;

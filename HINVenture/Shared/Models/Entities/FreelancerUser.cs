@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace HINVenture.Shared.Models
+namespace HINVenture.Shared.Models.Entities
 {
 
     public class FreelancerUser : ApplicationUser

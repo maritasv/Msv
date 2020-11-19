@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HINVenture.Shared.Models
+namespace HINVenture.Shared.Models.ViewModels
 {
    public class RegisterResult
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HINVenture.Shared.Models
+namespace HINVenture.Shared.Models.Entities
 {
     public class UserRoles : IdentityUserRole<string>
     {

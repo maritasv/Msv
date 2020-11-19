@@ -1,4 +1,6 @@
 ﻿using HINVenture.Shared.Models;
+using HINVenture.Shared.Models.Entities;
+using HINVenture.Shared.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HINVenture.Shared.Models;
+using HINVenture.Shared.Models.Entities;
 
 namespace HINVenture.Server
 {

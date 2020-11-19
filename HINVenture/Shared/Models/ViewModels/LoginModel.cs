@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace HINVenture.Shared.Models
+namespace HINVenture.Shared.Models.ViewModels
 {
     public class LoginModel
     {

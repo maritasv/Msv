@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace HINVenture.Shared.Models
+namespace HINVenture.Shared.Models.Entities
 {
 	public class CustomerUser : ApplicationUser
     {
