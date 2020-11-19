@@ -14,25 +14,24 @@ namespace HINVenture.Client
     public class ApiAuthenticationStateProvider : AuthenticationStateProvider
     {
         private readonly HttpClient _httpClient;
-        public ApiAuthenticationStateProvider(HttpClient httpClient)
+        private readonly ILocalStorageService _localStorage;
+
+        public ApiAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
+            _localStorage = localStorage;
         }
-
-        public string savedToken { get; private set; }
-        public void SetToken(string token)
-        {
-            savedToken = token;
-        }
-
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
+            var savedToken = await _localStorage.GetItemAsync<string>("authToken");
+
             if (string.IsNullOrWhiteSpace(savedToken))
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
+
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
         }
 
@@ -45,7 +44,6 @@ namespace HINVenture.Client
 
         public void MarkUserAsLoggedOut()
         {
-            savedToken = "";
             var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
             var authState = Task.FromResult(new AuthenticationState(anonymousUser));
             NotifyAuthenticationStateChanged(authState);
