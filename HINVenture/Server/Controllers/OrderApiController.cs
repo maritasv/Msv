@@ -7,6 +7,9 @@ using HINVenture.Shared.Models;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using HINVenture.Shared.Models.Entities;
+using Microsoft.AspNetCore.Identity;
+using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HINVenture.Server.Controllers
 {
@@ -14,20 +17,53 @@ namespace HINVenture.Server.Controllers
     [ApiController]
     public class OrderApiController : ControllerBase
     {
-        private readonly ApplicationDbContext context;
         private IRepository<Order> repository;
+        private UserManager<ApplicationUser> _userManager;
 
-        public OrderApiController(IRepository<Order> repository)
+        public OrderApiController(IRepository<Order> repository, UserManager<ApplicationUser> userManager )
         {
             this.repository = repository;
+            _userManager = userManager;
         }
 
         // GET: api/ProductAPI
         [HttpGet]
         [Route("{action}/{userName}")]
+        [Authorize]
         public IEnumerable<Order> GetOrdersByCustomer(string userName)
         {
-            return repository.GetAll().Where(a=>a.Customer.UserName == userName);
+            return repository.GetAll().Include(a=>a.Customer).ThenInclude(a=>a.ApplicationUser).Where(a=>a.Customer.ApplicationUser.UserName == userName);
+        }
+
+        [HttpGet]
+        [Route("{action}")]
+        [Authorize(Roles = "customer")]
+        public Order GetTest()
+        {
+            return new Order() { Title = "text"};
+        }
+
+        // POST: api/ProductAPI
+        [HttpPost("{userName}")]
+        [Authorize(Roles = "customer")]
+        
+        public async Task<IActionResult> Post([FromBody] Order order, string userName)
+        {
+            var user = await _userManager.Users.Include(a=>a.CustomerUser).FirstOrDefaultAsync(a=>a.UserName == userName);
+            if (user == null)
+                return BadRequest(ModelState);
+            
+            order.Customer = user.CustomerUser;
+            order.PostedDate = DateTime.Now;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //await repository.add(product, User);
+            await repository.Create(order);
+            return Ok();
         }
 
         //// GET: api/Product/5

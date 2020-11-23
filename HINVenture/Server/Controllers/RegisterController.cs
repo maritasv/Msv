@@ -34,6 +34,7 @@ namespace HINVenture.Server.Controllers
 
             try
             {
+                newUser.FreelancerUser = new FreelancerUser();
                 var result = await _userManager.CreateAsync(newUser, model.Password);
                 await _userManager.AddToRoleAsync(newUser, "freelancer");
                 if (!result.Succeeded)
@@ -57,6 +58,7 @@ namespace HINVenture.Server.Controllers
             var newUser = new ApplicationUser { UserName = model.Email, Email = model.Email };
             try
             {
+                newUser.CustomerUser = new CustomerUser();
                 var result = await _userManager.CreateAsync(newUser, model.Password);
                 await _userManager.AddToRoleAsync(newUser, "customer");
                 if (!result.Succeeded)

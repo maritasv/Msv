@@ -8,6 +8,8 @@ namespace HINVenture.Shared.Models.Entities
     public class ApplicationUser : IdentityUser
     {
         public string CryptocoinAddress { get; set; }
-        public ICollection<UserRoles> Roles { get; set; }                
+        public ICollection<UserRoles> Roles { get; set; }        
+        public CustomerUser CustomerUser { get; set; }
+        public FreelancerUser FreelancerUser { get; set; }
     }    
 }

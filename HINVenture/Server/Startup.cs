@@ -35,25 +35,31 @@ namespace HINVenture.Server
             services.AddRazorPages();
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                   options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = false,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = null,
-                ValidAudience = null,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
-            };
-        });
+            services.AddControllers().AddNewtonsoftJson(option => option.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects);
+            services.AddAuthentication(opt =>
+                {
+                    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = false,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = null,
+                        ValidAudience = null,
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
+                    };
+                });
+            services.AddTransient<IRepository<Order>, OrderRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,12 +81,13 @@ namespace HINVenture.Server
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+           
 
             app.UseRouting();
 
-           
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

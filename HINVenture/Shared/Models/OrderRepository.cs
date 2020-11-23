@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HINVenture.Shared.Models
 {
-    class OrderRepository : IRepository<Order>
+    public class OrderRepository : IRepository<Order>
     {
         private readonly ApplicationDbContext _db;
         public OrderRepository(ApplicationDbContext db)
@@ -16,9 +16,12 @@ namespace HINVenture.Shared.Models
             this._db = db;
         }
 
-        public Task Create(Order p)
+        public async Task Create(Order p)
         {
-            throw new NotImplementedException();
+         
+
+            _db.Orders.Add(p);
+            await _db.SaveChangesAsync();
         }
 
         public Task<Order> Get(int id)
@@ -28,7 +31,7 @@ namespace HINVenture.Shared.Models
 
         public IQueryable<Order> GetAll()
         {
-            throw new NotImplementedException();
+            return _db.Orders;
         }
 
         public Task Remove(Order entity)

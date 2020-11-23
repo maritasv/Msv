@@ -1,0 +1,60 @@
+﻿@page "/CreateOrder"
+@inject HttpClient _httpClient
+@inject NavigationManager _navigationManager
+@inject ApiAuthenticationStateProvider _stateProvider
+<h3>Create Order</h3>
+
+
+@code {
+    Order order = new Order();
+    string messageError = "";
+
+    AuthenticationState state;
+    bool isAccessDenied = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        state = await _stateProvider.GetAuthenticationStateAsync();
+        if (state.User.IsInRole("customer"))
+        {
+            isAccessDenied = true;
+        }
+
+    }
+
+    async Task CreateNewOrder()
+{
+    messageError = "";
+
+    var result = await _httpClient.PostAsJsonAsync($"api/OrderApi/{state.User.Identity.Name}", order);
+    if (result.IsSuccessStatusCode)
+    {
+        _navigationManager.NavigateTo("CustomerOrder");
+    }
+    else
+    {
+        messageError = "Error, try again";
+    }
+}
+}
+
+@if (isAccessDenied == false)
+{
+    <p>Access denied</p>
+}
+else
+{
+
+    <label>Enter title:</label>
+    <br/>
+    <input type="text" @bind="order.Title"/>
+    <br/>
+    <label>Enter description:</label>
+    <br/>
+    <textarea @bind="order.Description"></textarea>
+
+    <input type="button" value="Create order" @onclick="@(async () => await CreateNewOrder())"/>
+
+    <p>@messageError</p>
+
+}

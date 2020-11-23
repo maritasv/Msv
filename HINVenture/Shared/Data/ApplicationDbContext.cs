@@ -30,6 +30,12 @@ namespace HINVenture.Shared.Data
             builder.Entity<Speciality>().HasData(new Speciality { Name = "C# developer", Id = 1});
             builder.Entity<Speciality>().HasData(new Speciality { Name = "Python developer", Id = 2 });
             builder.Entity<Speciality>().HasData(new Speciality { Name = "Java developer", Id = 3 });
+
+            builder.Entity<CustomerUser>().HasOne(a => a.ApplicationUser).WithOne(a => a.CustomerUser)
+                .HasForeignKey<CustomerUser>(a => a.Id);
+
+            builder.Entity<FreelancerUser>().HasOne(a => a.ApplicationUser).WithOne(a => a.FreelancerUser)
+                .HasForeignKey<FreelancerUser>(a => a.Id);
         }
 
         public DbSet<Message> Messages { get; set; }

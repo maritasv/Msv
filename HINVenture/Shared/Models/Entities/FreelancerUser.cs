@@ -6,8 +6,9 @@ using System.Text;
 namespace HINVenture.Shared.Models.Entities
 {
 
-    public class FreelancerUser : ApplicationUser
+    public class FreelancerUser 
     {
+        public string Id { get; set; }
         public virtual ICollection<Order> CurrentOrders { get; set; }
         public virtual ICollection<OrderProgress> OrderProgresses { get; set; }
         public virtual ICollection<Speciality> Specs { get; set; }
@@ -15,5 +16,6 @@ namespace HINVenture.Shared.Models.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
         public float Rate { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

@@ -5,7 +5,8 @@
 @inject ApiAuthenticationStateProvider _StateProvider
 @*@attribute [Authorize(Roles = "customer")]*@
 
-@if (isAccessDenied)
+
+@if (isAccessDenied == false)
 {
     <p>Access denied</p>
 }
@@ -22,7 +23,7 @@ else
             </td>
             <td> </td>
             <td align="right">
-                <button class="btn btn-info">Add New Order</button>
+                <a class="btn btn-info" href="CreateOrder">Add New Order</a>
             </td>
             <td width="10"> </td>
         </tr>
@@ -75,10 +76,13 @@ else
                         <th>@order.Title</th>
                         <th>@order.Description</th>
                         <th>
-                            @foreach (var spec in order.Specs)
+                            @if (order.Specs != null)
+                            {
+                                @foreach (var spec in order.Specs)
                                 {
                                     @spec.Name
                                 }
+                            }
                         </th>
                     </tr>
                 }
@@ -95,18 +99,19 @@ else
     bool showAddrow = false;
     bool loadFailed;
 
-
     bool isAccessDenied = false;
     private List<Order> orders;
+    string role;
 
     protected override async Task OnInitializedAsync()
     {
         var state = await _StateProvider.GetAuthenticationStateAsync();
-        if (state.User.IsInRole("customer"))
-        {
-            isAccessDenied = true;
-            orders = await Http.GetFromJsonAsync<List<Order>>($"OrderApi/GetOrdersByCustomer/{state.User.Identity.Name}");
+
+            if (state.User.IsInRole("customer"))
+            {
+                isAccessDenied = true;
+                orders = await Http.GetFromJsonAsync<List<Order>>($"api/OrderApi/GetOrdersByCustomer/{state.User.Identity.Name}");
+            }
         }
     }
 
-}
