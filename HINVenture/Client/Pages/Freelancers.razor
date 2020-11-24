@@ -1,46 +1,74 @@
 ﻿@page "/freelancers"
 @using HINVenture.Shared
 @inject HttpClient Http
+@inject ApiAuthenticationStateProvider _StateProvider
 
-<h1>Out freelancers</h1>
 
 
-@if (freels == null)
+@if (isAccessDenied == false)
 {
-    <p><em>Loading...</em></p>
+    <p>Access denied</p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Specialties</th>
-                <th>Experience</th>
-                <th>Rate</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var freel in freels)
-            {
+
+    <h1>Out freelancers</h1>
+
+
+    @if (freels == null)
+    {
+        <p><em>Loading...</em></p>
+
+    }
+    else
+    {
+        @*
+        @foreach (var todo in todos)
+        {
+            <li>
+                <input type="checkbox" @bind="todo.Done" />
+                <label>@((MarkupString)todo.Item)</label>
+            </li>
+        }*@
+        <table class="table">
+            <thead>
                 <tr>
-                    @*<td>@freel.</td>*@
-                    <td>@freel.Specs</td>
-                    <td></td>
-                    <td>@freel.Rate</td>
+                    <th>Username</th>
+                    <th>Specialties</th>
+                    <th>Rate</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var freel in freels)
+                {
+                    <tr>
+                        <td>@freel.ApplicationUser.FullName</td>
+                        <th>Speciality </th>
+                        <th>@freel.Rate</th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    }
 }
 
 @code {
-    private FreelancerUser[] freels;
 
-    FreelancerUser freelObj = new FreelancerUser();
+    bool isAccessDenied = false;
+    private List<FreelancerUser> freels;
+    string role;
 
     protected override async Task OnInitializedAsync()
     {
-        freels = await Http.GetFromJsonAsync<FreelancerUser[]>("Freelancers"); ;
+
+        var state = await _StateProvider.GetAuthenticationStateAsync();
+
+        if (state.User.IsInRole("customer"))
+        {
+            isAccessDenied = true;
+            freels = await Http.GetFromJsonAsync<List<FreelancerUser>>($"api/Freelancers/GetAllFreelancers");
+
+        }
     }
 }

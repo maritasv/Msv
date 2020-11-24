@@ -4,14 +4,16 @@ using HINVenture.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HINVenture.Shared.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201124080719_CheckUsers")]
+    partial class CheckUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,29 +50,29 @@ namespace HINVenture.Shared.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "abefa3b4-0e1a-4e65-81bb-0e1265162cc5",
-                            ConcurrencyStamp = "dfab55be-2863-4d58-b952-85e9c3e9ad76",
+                            Id = "5d763f81-c499-44d8-a3a4-6a90e5c34eb3",
+                            ConcurrencyStamp = "37619d5b-4696-4260-8c7e-aa637acae354",
                             Name = "freelancer",
                             NormalizedName = "FREELANCER"
                         },
                         new
                         {
-                            Id = "e7d361b0-cd0b-4e04-9117-6ade97f25f09",
-                            ConcurrencyStamp = "dd17753f-9fca-48b7-8442-2c75c618a276",
+                            Id = "dec2fab1-a4ca-4812-88af-ab42edb26ad4",
+                            ConcurrencyStamp = "94bdf15b-34b3-4954-a2c9-54b99ecfe346",
                             Name = "customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = "dfc405a7-3144-41b2-9024-12ec9cadd65f",
-                            ConcurrencyStamp = "8bc3bf73-0059-40f5-a41e-f7c5558ce22a",
+                            Id = "ec41838d-388f-4ef3-a866-e874adf1ec28",
+                            ConcurrencyStamp = "ba3d09f8-d363-41aa-83b3-338580887572",
                             Name = "senior",
                             NormalizedName = "SENIOR"
                         },
                         new
                         {
-                            Id = "f32eb71d-29fa-4427-b2a7-658d474f29a3",
-                            ConcurrencyStamp = "14ffb597-4176-45fa-9c89-7a81dcd42618",
+                            Id = "296d8d9b-3dd9-437a-b649-a04b713db08f",
+                            ConcurrencyStamp = "5d7faf6d-b163-4b61-896d-b311a25885d3",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         });
@@ -98,9 +100,6 @@ namespace HINVenture.Shared.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -127,6 +126,9 @@ namespace HINVenture.Shared.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SpecialityId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -144,6 +146,8 @@ namespace HINVenture.Shared.Migrations
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("SpecialityId");
+
                     b.ToTable("AspNetUsers");
                 });
 
@@ -155,21 +159,6 @@ namespace HINVenture.Shared.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CustomerUsers");
-                });
-
-            modelBuilder.Entity("HINVenture.Shared.Models.Entities.FreelancerSpeciality", b =>
-                {
-                    b.Property<string>("FreelancerUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("SpecialityId")
-                        .HasColumnType("int");
-
-                    b.HasKey("FreelancerUserId", "SpecialityId");
-
-                    b.HasIndex("SpecialityId");
-
-                    b.ToTable("FreelancerSpeciality");
                 });
 
             modelBuilder.Entity("HINVenture.Shared.Models.Entities.FreelancerUser", b =>
@@ -287,6 +276,9 @@ namespace HINVenture.Shared.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("FreelancerUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -294,6 +286,8 @@ namespace HINVenture.Shared.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FreelancerUserId");
 
                     b.HasIndex("OrderId");
 
@@ -421,26 +415,18 @@ namespace HINVenture.Shared.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("HINVenture.Shared.Models.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("HINVenture.Shared.Models.Entities.Speciality", null)
+                        .WithMany("Freelancers")
+                        .HasForeignKey("SpecialityId");
+                });
+
             modelBuilder.Entity("HINVenture.Shared.Models.Entities.CustomerUser", b =>
                 {
                     b.HasOne("HINVenture.Shared.Models.Entities.ApplicationUser", "ApplicationUser")
                         .WithOne("CustomerUser")
                         .HasForeignKey("HINVenture.Shared.Models.Entities.CustomerUser", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("HINVenture.Shared.Models.Entities.FreelancerSpeciality", b =>
-                {
-                    b.HasOne("HINVenture.Shared.Models.Entities.FreelancerUser", "FreelancerUser")
-                        .WithMany("Specs")
-                        .HasForeignKey("FreelancerUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HINVenture.Shared.Models.Entities.Speciality", "Speciality")
-                        .WithMany("Freelancers")
-                        .HasForeignKey("SpecialityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -493,6 +479,10 @@ namespace HINVenture.Shared.Migrations
 
             modelBuilder.Entity("HINVenture.Shared.Models.Entities.Speciality", b =>
                 {
+                    b.HasOne("HINVenture.Shared.Models.Entities.FreelancerUser", null)
+                        .WithMany("Specs")
+                        .HasForeignKey("FreelancerUserId");
+
                     b.HasOne("HINVenture.Shared.Models.Entities.Order", null)
                         .WithMany("Specs")
                         .HasForeignKey("OrderId");

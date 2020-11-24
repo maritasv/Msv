@@ -22,10 +22,20 @@ namespace HINVenture.Shared.Data
 
             builder.Entity<UserRoles>().HasOne(a => a.User).WithMany(a => a.Roles).HasForeignKey(a => a.UserId);
             builder.Entity<UserRoles>().HasOne(a => a.Role).WithMany(a => a.Users).HasForeignKey(a => a.RoleId);
+
+            builder.Entity<FreelancerSpeciality>().HasKey(a => new { a.FreelancerUserId, a.SpecialityId });
+            builder.Entity<FreelancerSpeciality>().HasOne(a => a.FreelancerUser).WithMany(a => a.Specs).HasForeignKey(a => a.FreelancerUserId);
+            builder.Entity<FreelancerSpeciality>().HasOne(a => a.Speciality).WithMany(a => a.Freelancers).HasForeignKey(a => a.SpecialityId);
+
+
+
+
             builder.Entity<ApplicationRole>().HasData(new IdentityRole { Name = "freelancer", NormalizedName = "FREELANCER", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });
             builder.Entity<ApplicationRole>().HasData(new IdentityRole { Name = "customer", NormalizedName = "CUSTOMER", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });
             builder.Entity<ApplicationRole>().HasData(new IdentityRole { Name = "senior", NormalizedName = "SENIOR", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });
             builder.Entity<ApplicationRole>().HasData(new IdentityRole { Name = "admin", NormalizedName = "ADMIN", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });
+
+
 
             builder.Entity<Speciality>().HasData(new Speciality { Name = "C# developer", Id = 1});
             builder.Entity<Speciality>().HasData(new Speciality { Name = "Python developer", Id = 2 });
@@ -42,5 +52,7 @@ namespace HINVenture.Shared.Data
         public DbSet<OrderProgress> OrderProgresses { get; set; }
         public DbSet<Speciality> Specialities { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<FreelancerUser> FreelancerUsers { get; set; }
+        public DbSet<CustomerUser> CustomerUsers { get; set; }
     }
 }

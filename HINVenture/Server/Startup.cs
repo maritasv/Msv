@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HINVenture.Shared.Models;
 using HINVenture.Shared.Models.Entities;
+using HINVenture.Shared.Models.ViewModels;
 
 namespace HINVenture.Server
 {
@@ -60,7 +61,8 @@ namespace HINVenture.Server
                     };
                 });
             services.AddTransient<IRepository<Order>, OrderRepository>();
-        }
+            services.AddTransient<IRepository<FreelancerUser>, FreelancersRepository>();
+            }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
