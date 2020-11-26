@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using HINVenture.Client.Services;
+using MatBlazor;
 
 namespace HINVenture.Client
 {
@@ -26,7 +27,10 @@ namespace HINVenture.Client
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<ApiAuthenticationStateProvider>();
             builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<ApiAuthenticationStateProvider>());
+            builder.Services.AddMatBlazor();
 
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore();
 
             builder.Services.AddScoped<AuthService>();
             await builder.Build().RunAsync();

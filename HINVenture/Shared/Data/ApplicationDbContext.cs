@@ -27,7 +27,10 @@ namespace HINVenture.Shared.Data
             builder.Entity<FreelancerSpeciality>().HasOne(a => a.FreelancerUser).WithMany(a => a.Specs).HasForeignKey(a => a.FreelancerUserId);
             builder.Entity<FreelancerSpeciality>().HasOne(a => a.Speciality).WithMany(a => a.Freelancers).HasForeignKey(a => a.SpecialityId);
 
-
+            builder.Entity<Order>()
+                .HasOne<Speciality>(s => s.Speciality)
+                .WithMany(g => g.Orders)
+                .HasForeignKey(s => s.SpecialityId);
 
 
             builder.Entity<ApplicationRole>().HasData(new IdentityRole { Name = "freelancer", NormalizedName = "FREELANCER", Id = Guid.NewGuid().ToString(), ConcurrencyStamp = Guid.NewGuid().ToString() });

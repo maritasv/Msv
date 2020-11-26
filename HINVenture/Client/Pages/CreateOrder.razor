@@ -2,6 +2,7 @@
 @inject HttpClient _httpClient
 @inject NavigationManager _navigationManager
 @inject ApiAuthenticationStateProvider _stateProvider
+@inject HttpClient Http
 <h3>Create Order</h3>
 
 
@@ -12,30 +13,40 @@
     AuthenticationState state;
     bool isAccessDenied = false;
 
+    List<Speciality> specs;
+
     protected override async Task OnInitializedAsync()
     {
         state = await _stateProvider.GetAuthenticationStateAsync();
         if (state.User.IsInRole("customer"))
         {
             isAccessDenied = true;
+            var responce = await Http.GetAsync($"api/Specialities/GetAllSpecialities");
+            string json = await responce.Content.ReadAsStringAsync();
+            specs = JsonConvert.DeserializeObject<List<Speciality>>(json);
+            SelectedSpec = specs.First();
         }
 
     }
 
-    async Task CreateNewOrder()
-{
-    messageError = "";
+    Speciality SelectedSpec;
 
-    var result = await _httpClient.PostAsJsonAsync($"api/OrderApi/{state.User.Identity.Name}", order);
-    if (result.IsSuccessStatusCode)
+    async Task CreateNewOrder()
     {
-        _navigationManager.NavigateTo("CustomerOrder");
+        messageError = "";
+        order.SpecialityId = SelectedSpec.Id;
+        var result = await _httpClient.PostAsJsonAsync($"api/OrderApi/{state.User.Identity.Name}", order);
+
+        if (result.IsSuccessStatusCode)
+        {
+            _navigationManager.NavigateTo("CustomerOrder");
+        }
+        else
+        {
+            messageError = "Error, try again";
+        }
     }
-    else
-    {
-        messageError = "Error, try again";
-    }
-}
+
 }
 
 @if (isAccessDenied == false)
@@ -46,14 +57,21 @@ else
 {
 
     <label>Enter title:</label>
-    <br/>
-    <input type="text" @bind="order.Title"/>
-    <br/>
+    <br />
+    <input type="text" @bind="order.Title" />
+    <br />
     <label>Enter description:</label>
-    <br/>
+    <br />
     <textarea @bind="order.Description"></textarea>
+    <MatRadioGroup @bind-Value="@SelectedSpec" Items="@specs">
+        <ItemTemplate>
+            <div>
+                <MatRadioButton Value="@context">@context.Name</MatRadioButton>
+            </div>
+        </ItemTemplate>
+    </MatRadioGroup>
 
-    <input type="button" value="Create order" @onclick="@(async () => await CreateNewOrder())"/>
+    <input type="button" value="Create order" @onclick="@(async () => await CreateNewOrder())" />
 
     <p>@messageError</p>
 

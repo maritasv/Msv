@@ -76,12 +76,9 @@ else
                         <th>@order.Title</th>
                         <th>@order.Description</th>
                         <th>
-                            @if (order.Specs != null)
+                            @if (order.Speciality != null)
                             {
-                                @foreach (var spec in order.Specs)
-                                {
-                                    @spec.Name
-                                }
+                                <span>@order.Speciality.Name</span>
                             }
                         </th>
                     </tr>
@@ -110,7 +107,12 @@ else
             if (state.User.IsInRole("customer"))
             {
                 isAccessDenied = true;
-                orders = await Http.GetFromJsonAsync<List<Order>>($"api/OrderApi/GetOrdersByCustomer/{state.User.Identity.Name}");
+
+                var responce = await Http.GetAsync($"api/OrderApi/GetOrdersByCustomer/{state.User.Identity.Name}");
+                string json = await responce.Content.ReadAsStringAsync();
+                orders = JsonConvert.DeserializeObject<List<Order>>(json);
+
+    //orders = await Http.GetFromJsonAsync<List<Order>>($"api/OrderApi/GetOrdersByCustomer/{state.User.Identity.Name}");
             }
         }
     }

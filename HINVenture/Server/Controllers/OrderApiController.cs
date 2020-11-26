@@ -18,12 +18,14 @@ namespace HINVenture.Server.Controllers
     public class OrderApiController : ControllerBase
     {
         private IRepository<Order> repository;
+        private IRepository<Speciality> _specRepository;
         private UserManager<ApplicationUser> _userManager;
 
-        public OrderApiController(IRepository<Order> repository, UserManager<ApplicationUser> userManager )
+        public OrderApiController(IRepository<Order> repository, IRepository<Speciality> specRepository, UserManager<ApplicationUser> userManager )
         {
             this.repository = repository;
             _userManager = userManager;
+            _specRepository = specRepository;
         }
 
         // GET: api/ProductAPI
@@ -32,7 +34,12 @@ namespace HINVenture.Server.Controllers
         [Authorize]
         public IEnumerable<Order> GetOrdersByCustomer(string userName)
         {
-            return repository.GetAll().Include(a=>a.Customer).ThenInclude(a=>a.ApplicationUser).Where(a=>a.Customer.ApplicationUser.UserName == userName);
+            var result = repository.GetAll()
+                .Include(a => a.Customer)
+                .ThenInclude(a => a.ApplicationUser)
+                .Include(a=>a.Speciality)
+                .Where(a => a.Customer.ApplicationUser.UserName == userName);
+            return result;
         }
 
         // POST: api/ProductAPI
@@ -47,13 +54,22 @@ namespace HINVenture.Server.Controllers
             
             order.Customer = user.CustomerUser;
             order.PostedDate = DateTime.Now;
-
+            
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            await repository.Create(order);
+            try
+            {
+
+                await repository.Create(order);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
             return Ok();
         }
 

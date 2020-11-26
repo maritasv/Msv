@@ -4,14 +4,16 @@ using HINVenture.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HINVenture.Shared.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201126120441_AddSpeciality2")]
+    partial class AddSpeciality2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,29 +50,29 @@ namespace HINVenture.Shared.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "11afdd1e-e41a-45cd-88c2-1955dc8e078e",
-                            ConcurrencyStamp = "fe410b3e-ace1-46fc-9267-291d4d33febc",
+                            Id = "1e077bd1-b8b0-4648-ab6f-20c7d0c57ac9",
+                            ConcurrencyStamp = "b43dfcd8-618c-4cd8-b1af-45d78acf1cda",
                             Name = "freelancer",
                             NormalizedName = "FREELANCER"
                         },
                         new
                         {
-                            Id = "697efaf1-c647-4cfa-8e95-17900ee73cb6",
-                            ConcurrencyStamp = "bc5d63c5-56b6-4aee-af47-8cd9eacbfe76",
+                            Id = "1db601f7-5228-42a1-9a2a-5afccaddac9b",
+                            ConcurrencyStamp = "3c178fff-1589-479d-83d4-9e77b5634f63",
                             Name = "customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = "2016baca-0f5f-4ff1-8411-4cd5f269ba0c",
-                            ConcurrencyStamp = "d7a86d5d-8420-4968-8715-2d4fe4f63af9",
+                            Id = "18d78bb8-5a54-4e3c-b065-303da9698fbe",
+                            ConcurrencyStamp = "4665f161-9595-444a-b3bd-ac8a0521db75",
                             Name = "senior",
                             NormalizedName = "SENIOR"
                         },
                         new
                         {
-                            Id = "5d2667a3-7f1a-46b4-9639-35c8f3060b63",
-                            ConcurrencyStamp = "905f5b39-4f76-4b6b-a2d2-92ec97e8cf40",
+                            Id = "a7912066-eea4-4566-ac68-7c3e61c20fd5",
+                            ConcurrencyStamp = "ef8109f5-93e6-4b6e-acb2-c522dddea42f",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         });
@@ -240,7 +242,7 @@ namespace HINVenture.Shared.Migrations
                     b.Property<DateTime>("PostedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SpecialityId")
+                    b.Property<int?>("SpecialityId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -481,9 +483,7 @@ namespace HINVenture.Shared.Migrations
 
                     b.HasOne("HINVenture.Shared.Models.Entities.Speciality", "Speciality")
                         .WithMany("Orders")
-                        .HasForeignKey("SpecialityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SpecialityId");
                 });
 
             modelBuilder.Entity("HINVenture.Shared.Models.Entities.OrderProgress", b =>
