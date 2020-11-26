@@ -18,15 +18,13 @@ namespace HINVenture.Shared.Models
 
         public async Task Create(Order p)
         {
-         
-
             _db.Orders.Add(p);
             await _db.SaveChangesAsync();
         }
 
-        public Task<Order> Get(int id)
+        public async Task<Order> Get(int id)
         {
-            throw new NotImplementedException();
+            return await _db.Set<Order>().FindAsync(id);
         }
 
         public IQueryable<Order> GetAll()
@@ -39,9 +37,10 @@ namespace HINVenture.Shared.Models
             throw new NotImplementedException();
         }
 
-        public Task Update(Order entity)
+        public async Task Update(Order entity)
         {
-            throw new NotImplementedException();
+            _db.Set<Order>().Update(entity);
+            await _db.SaveChangesAsync();
         }
         
     }

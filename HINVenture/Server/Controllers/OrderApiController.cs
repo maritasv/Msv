@@ -35,14 +35,6 @@ namespace HINVenture.Server.Controllers
             return repository.GetAll().Include(a=>a.Customer).ThenInclude(a=>a.ApplicationUser).Where(a=>a.Customer.ApplicationUser.UserName == userName);
         }
 
-        [HttpGet]
-        [Route("{action}")]
-        [Authorize(Roles = "customer")]
-        public Order GetTest()
-        {
-            return new Order() { Title = "text"};
-        }
-
         // POST: api/ProductAPI
         [HttpPost("{userName}")]
         [Authorize(Roles = "customer")]
@@ -61,59 +53,61 @@ namespace HINVenture.Server.Controllers
                 return BadRequest(ModelState);
             }
 
-            //await repository.add(product, User);
             await repository.Create(order);
             return Ok();
         }
 
-        //// GET: api/Product/5
-        //[HttpGet("{id}")]
-        //public IActionResult Get([FromRoute] int id)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    var product = repository.Get(id);
-        //    if (product == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(product);
-        //}
+        // GET: api/ProductAPI
+        [HttpGet]
+        [Route("{action}/{userName}")]
+        [Authorize]
+        public IEnumerable<Order> GetOrdersByFreelancer(string userName)
+        {
+            return repository.GetAll().Include(a => a.CurrentFreelancer).ThenInclude(a => a.ApplicationUser).Where(a => a.CurrentFreelancer.ApplicationUser.UserName == userName);
+        }
 
-        //// PUT: api/ProductAPI/5
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> Put([FromRoute] int id, [FromBody] ProductEditViewModel product)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
 
-        //    if (id != product.ProductId)
-        //    {
-        //        return BadRequest();
-        //    }
+        // GET: api/Product/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrdersByid([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var order = await repository.Get(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return Ok(order);
+        }
 
-        //    try
-        //    {
-        //        await repository.Update(product);
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!ProductExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
+        // PUT: api/ProductAPI/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put([FromRoute] int id, [Bind("Id,Title,Description")] Order order)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    return NoContent();
-        //}
+            if (id != order.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await repository.Update(order);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
 
         //// POST: api/ProductAPI
         //[HttpPost]

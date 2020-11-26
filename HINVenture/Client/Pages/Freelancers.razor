@@ -15,21 +15,23 @@ else
     <h1>Out freelancers</h1>
 
 
-    @if (freels == null)
+    @if (freels == null && specialities == null)
     {
         <p><em>Loading...</em></p>
 
     }
     else
     {
-        @*
-        @foreach (var todo in todos)
-        {
-            <li>
-                <input type="checkbox" @bind="todo.Done" />
-                <label>@((MarkupString)todo.Item)</label>
-            </li>
-        }*@
+      <ul>
+             @foreach (var speciality in specialities )
+             {
+          <li>
+              <input type="checkbox" @onchange="async (eventArgs) => await CheckboxClicked(speciality, eventArgs)" />
+              <label>@speciality.Name</label>
+          </li>
+             }
+        </ul>
+
         <table class="table">
             <thead>
                 <tr>
@@ -43,7 +45,12 @@ else
                 {
                     <tr>
                         <td>@freel.ApplicationUser.FullName</td>
-                        <th>Speciality </th>
+                        <th>
+                            @foreach (var spec in freel.Specs)
+                            {
+                                <span style="padding-left: 10px">@spec.Speciality.Name</span>
+                            }
+                            </th>
                         <th>@freel.Rate</th>
                     </tr>
                 }
@@ -57,6 +64,7 @@ else
 
     bool isAccessDenied = false;
     private List<FreelancerUser> freels;
+    private List<Speciality> specialities;
     string role;
 
     protected override async Task OnInitializedAsync()
@@ -68,7 +76,28 @@ else
         {
             isAccessDenied = true;
             freels = await Http.GetFromJsonAsync<List<FreelancerUser>>($"api/Freelancers/GetAllFreelancers");
+            specialities = await Http.GetFromJsonAsync<List<Speciality>>($"api/Specialities/GetAllSpecialities");
 
+        }
+    }
+
+    async Task CheckboxClicked(Speciality speciality, ChangeEventArgs checkedValue)
+    {
+        if ((bool)checkedValue.Value == true)
+        {
+            if (!specialities.Contains(speciality))
+            {
+                freels.RemoveAll(a => a.Specs.Count(a => a.SpecialityId == speciality.Id) == 0);
+                freels.AddRange(await Http.GetFromJsonAsync<List<FreelancerUser>>($"api/Freelancers/GetFreelancersBySpec/{speciality.Id}"));
+
+            }
+        }
+        else
+        {
+            if (specialities.Contains(speciality))
+            {
+                freels.RemoveAll(a => a.Specs.Count(a => a.SpecialityId == speciality.Id) == 0);
+            }
         }
     }
 }

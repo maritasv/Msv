@@ -62,7 +62,8 @@ namespace HINVenture.Server
                 });
             services.AddTransient<IRepository<Order>, OrderRepository>();
             services.AddTransient<IRepository<FreelancerUser>, FreelancersRepository>();
-            }
+            services.AddTransient<IRepository<Speciality>, SpecialitiesRepository>();
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
