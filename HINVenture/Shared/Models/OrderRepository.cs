@@ -34,11 +34,6 @@ namespace HINVenture.Shared.Models
             return _db.Orders;
         }
 
-        public Task Remove(Order entity)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task Update(Order entity)
         {
             throw new NotImplementedException();
