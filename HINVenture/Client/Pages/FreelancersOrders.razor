@@ -1,0 +1,68 @@
+﻿@page "/freelancersorders"
+@using Microsoft.AspNetCore.Authorization
+@inject HttpClient _httpClient
+@inject ApiAuthenticationStateProvider _StateProvider
+
+
+@if (isAccessDenied == false)
+{
+    <p>Access denied</p>
+}
+else
+{
+<h1>Freelancers orders</h1>
+
+    @if (orders == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Posted Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in orders)
+                {
+                <tr>
+                    <th>@order.Title</th>
+                    <th>@order.Description</th>
+                    <th>@order.PostedDate</th>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@order.Id" href="OrderInfo">Edit</a> |
+                        <a asp-page="./Delete" asp-route-id="@order.Id" href="">Cancel</a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+
+
+    string id = "0";
+    bool loadFailed;
+
+    bool isAccessDenied = false;
+    private List<Order> orders;
+    private Order order;
+    string role;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await _StateProvider.GetAuthenticationStateAsync();
+
+        if (state.User.IsInRole("freelancer"))
+        {
+            isAccessDenied = true;
+            orders = await _httpClient.GetFromJsonAsync<List<Order>>($"api/OrderApi/GetOrdersByFreelancer/{state.User.Identity.Name}");
+        }
+    }
+}
