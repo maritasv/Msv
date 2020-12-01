@@ -15,6 +15,8 @@ using System.Text;
 using HINVenture.Shared.Models;
 using HINVenture.Shared.Models.Entities;
 using HINVenture.Shared.Models.ViewModels;
+using Newtonsoft.Json;
+using HINVenture.Server.Hubs;
 
 namespace HINVenture.Server
 {
@@ -34,6 +36,12 @@ namespace HINVenture.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddSignalR();
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -61,7 +69,7 @@ namespace HINVenture.Server
                     };
                 });
             services.AddTransient<IRepository<Order>, OrderRepository>();
-            services.AddTransient<IRepository<FreelancerUser>, FreelancersRepository>();
+            services.AddTransient<IUserRepository<FreelancerUser>, FreelancersRepository>();
             services.AddTransient<IRepository<Speciality>, SpecialitiesRepository>();
         }
 
@@ -84,8 +92,6 @@ namespace HINVenture.Server
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
-           
-
             app.UseRouting();
 
 
@@ -96,6 +102,7 @@ namespace HINVenture.Server
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/broadcastHub");
                 endpoints.MapFallbackToFile("index.html");
             });
         }

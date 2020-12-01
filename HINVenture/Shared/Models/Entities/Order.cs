@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace HINVenture.Shared.Models.Entities
 {
@@ -13,6 +12,7 @@ namespace HINVenture.Shared.Models.Entities
         public DateTime PostedDate { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string Code { get; set; }
         public virtual CustomerUser Customer { get; set; }
         public virtual FreelancerUser CurrentFreelancer { get; set; }
         public int SpecialityId { get; set; }

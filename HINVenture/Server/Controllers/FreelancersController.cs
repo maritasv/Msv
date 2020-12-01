@@ -13,8 +13,8 @@ namespace HINVenture.Server.Controllers
     [ApiController]
     public class FreelancersController : ControllerBase
     {
-        protected IRepository<FreelancerUser> _freelancersRepository;
-        public FreelancersController(IRepository<FreelancerUser> freelancersRepository)
+        protected IUserRepository<FreelancerUser> _freelancersRepository;
+        public FreelancersController(IUserRepository<FreelancerUser> freelancersRepository)
         {
             _freelancersRepository = freelancersRepository;
         }
@@ -34,6 +34,6 @@ namespace HINVenture.Server.Controllers
         {
             return await _freelancersRepository.GetAll().Where(a => a.Specs.Count(a => a.SpecialityId == specId) != 0)
                 .Include(a => a.ApplicationUser).Include(a => a.Specs).ThenInclude(a => a.Speciality).ToListAsync();
-        }
+        }       
     }
 }

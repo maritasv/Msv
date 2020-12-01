@@ -6,36 +6,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HINVenture.Shared.Models.ViewModels
+namespace HINVenture.Shared.Models
 {
-    public class FreelancersRepository : IUserRepository<FreelancerUser>
+    class MessageRepository : IRepository<Message>
     {
         private readonly ApplicationDbContext _db;
-        public FreelancersRepository(ApplicationDbContext db)
+        public MessageRepository(ApplicationDbContext db)
         {
             this._db = db;
         }
-        public Task Create(FreelancerUser p)
+
+        public Task Create(Message p)
         {
             throw new NotImplementedException();
         }
 
-        public Task<FreelancerUser> Get(string id)
+        public Task<Message> Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IQueryable<FreelancerUser> GetAll()
-        {
-            return _db.FreelancerUsers;
-        }
-
-        public Task Remove(FreelancerUser entity)
+        public IQueryable<Message> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Task Update(FreelancerUser entity)
+        public Task Remove(Message entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Update(Message entity)
         {
             throw new NotImplementedException();
         }

@@ -4,14 +4,16 @@ using HINVenture.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HINVenture.Shared.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201127193604_addStringCodeToOrder")]
+    partial class addStringCodeToOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,29 +50,29 @@ namespace HINVenture.Shared.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "aa8035ef-792b-4298-a16c-dc8348e7e5be",
-                            ConcurrencyStamp = "2ca0066b-3bb5-40b6-aa07-fa7adba40ef4",
+                            Id = "ffd561f9-2f37-4e96-8783-87506647f0e2",
+                            ConcurrencyStamp = "6d8d893e-6103-490f-a3c0-dddef859f860",
                             Name = "freelancer",
                             NormalizedName = "FREELANCER"
                         },
                         new
                         {
-                            Id = "c7bca109-127d-4296-ab71-8fdb861cfffe",
-                            ConcurrencyStamp = "f86c7259-c4eb-4966-a899-c0e104d5079e",
+                            Id = "27a8b316-2209-4def-aa82-22c2ecbc8dad",
+                            ConcurrencyStamp = "b691a185-0472-4198-912e-38ba9e29e50b",
                             Name = "customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = "fc911bb2-0d79-4f75-a0f5-d7b8c84338f7",
-                            ConcurrencyStamp = "8e5dca4e-27e0-4d6a-bd83-ba6605155d5a",
+                            Id = "fecd6dbe-ec30-48fd-8315-856714632cf4",
+                            ConcurrencyStamp = "62fbe613-d397-4e59-a6ef-6aadaac64731",
                             Name = "senior",
                             NormalizedName = "SENIOR"
                         },
                         new
                         {
-                            Id = "3feba2d7-66b8-4c36-97ce-39069cb062d6",
-                            ConcurrencyStamp = "66fdacf9-cb1d-42c0-acfb-778bfd13ea07",
+                            Id = "f738d4c6-5bea-40d4-8982-dc5913d66c04",
+                            ConcurrencyStamp = "c03f6a3f-b66a-414c-b301-6e005d9012e6",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         });

@@ -1,9 +1,9 @@
 ﻿@page "/OrderInfo"
+@page "/OrderInfo/{id:int}"
 @inject HttpClient _httpClient
 @inject NavigationManager _navigationManager
 @inject ApiAuthenticationStateProvider _stateProvider
-
-<h3>Working with orders</h3>
+@using Microsoft.AspNetCore.SignalR.Client
 
 
 @if (isAccessDenied == false)
@@ -12,53 +12,146 @@
 }
 else
 {
-    <div class="row">
-        <div class="col-md-9">
-            <form class="form form-horizontal">
-                <div class="form-group">
-                    <label class="col-md-2 control-label">Title</label>
-                    <div class="col-md-7">
-                        <input type="text" bind=@order.Title class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label">ISBN:</label>
-                    <div class="col-md-7">
-                        <input type="text" bind=@order.Description class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label"></label>
-                    <div class="col-md-7">
-                        <button class="btn btn-primary" >Save</button>
-                    </div>
-                </div>
-            </form>
+    <h3>Working with order @Id</h3>
+
+    <hr />
+    <div class="form-group row">
+        <label for="firstName" class="col-sm-2 col-form-label">
+            Title
+        </label>
+        <div class="col-sm-10">
+            <input type="text" id="title" class="form-control" placeholder="Title" readonly="readonly"
+                   @bind-value="@order.Title" />
         </div>
     </div>
+
+    <div class="form-group row">
+        <label for="description" class="col-sm-2 col-form-label">
+            Description
+        </label>
+        <div class="col-sm-10">
+            <input type="text" id="description" class="form-control" placeholder="Description"
+                   @bind-value="@order.Description" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="code" class="col-sm-2 col-form-label">
+            Code
+        </label>
+        <div class="col-sm-10">
+            <textarea id="code" class="form-control" placeholder="Code"
+                      @bind="@order.Code" style="height: auto; min-height: 300px;"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="code" class="col-sm-2 col-form-label">
+            Speciality
+        </label>
+        <div class="col-sm-10">
+            <MatRadioGroup @bind-Value="@SelectedSpec" Items="@specs">
+                <ItemTemplate>
+                    <div>
+                        <MatRadioButton Value="@context">@context.Name</MatRadioButton>
+                    </div>
+                </ItemTemplate>
+            </MatRadioGroup>
+        </div>
+    </div>
+    <a @onclick="EditOrder" class="btn btn-primary m-1">Edit</a>
+    <a href="freelancersorders" class="btn btn-danger m-1">Cancel</a>
 
 }
 
 @code {
-    string id = "0";
-    Order order = new Order();
 
-    List<Order> orders = null;
-    string Message { get; set; }
+    private Order order = new Order();
+    List<Speciality> specs;
+
+    string messageError = "";
 
     AuthenticationState state;
+    private HubConnection hubConnection;
+
     bool isAccessDenied = false;
+
+    [Parameter]
+    public int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         state = await _stateProvider.GetAuthenticationStateAsync();
+
         if (state.User.IsInRole("freelancer"))
         {
-            isAccessDenied = true;
-           //  order = await _httpClient.GetFromJsonAsync<Order>($"api/OrderApi/GetOrdersByid/{id}");
 
+            hubConnection = new HubConnectionBuilder()
+           .WithUrl(_navigationManager.ToAbsoluteUri("/broadcastHub"))
+           .Build();
+
+            hubConnection.On("ReceiveMessage", () =>
+            {
+                CallLoadData();
+                StateHasChanged();
+            });
+
+            await hubConnection.StartAsync();
+
+            await LoadData();
+        }
+        void CallLoadData()
+        {
+            Task.Run(async () =>
+            {
+                await LoadData();
+            });
         }
 
+        async Task LoadData()
+        {
+            isAccessDenied = true;
+            var responce = await _httpClient.GetAsync($"api/OrderApi/GetOrdersByid/{Id}");
+            string json = await responce.Content.ReadAsStringAsync();
+            order = JsonConvert.DeserializeObject<Order>(json);
+
+            responce = await _httpClient.GetAsync($"api/Specialities/GetAllSpecialities");
+            json = await responce.Content.ReadAsStringAsync();
+            specs = JsonConvert.DeserializeObject<List<Speciality>>(json);
+
+            SelectedSpec = specs.First();
+        }
+    }
+    public bool IsConnected =>
+            hubConnection.State == HubConnectionState.Connected;
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
     }
 
+
+    Speciality SelectedSpec;
+    protected async Task EditOrder()
+    {
+        order.Speciality = null;
+        order.SpecialityId = SelectedSpec.Id;
+
+        string objAsJson = JsonConvert.SerializeObject(order, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+
+        var content = new StringContent(objAsJson.ToString(), Encoding.UTF8, "application/json");
+        var result = await _httpClient.PutAsync($"api/OrderApi/{Id}", content);
+
+        if (result.IsSuccessStatusCode)
+        {
+            //_navigationManager.NavigateTo($"OrderInfo/{Id}");
+            _navigationManager.NavigateTo($"FreelancersOrders");
+        }
+        else
+        {
+            messageError = "Error, try again";
+        }
+    }
+
+
 }
+

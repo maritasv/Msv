@@ -25,7 +25,7 @@ namespace HINVenture.Server.Controllers
         {
             _userManager = userManager;
         }
-
+        
         [HttpPost]
         [Route("{action}")]
         public async Task<IActionResult> Freelancer([FromBody] RegisterModel model)

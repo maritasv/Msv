@@ -85,13 +85,16 @@ namespace HINVenture.Server.Controllers
 
         // GET: api/Product/5
         [HttpGet("{id}")]
+        [Authorize]
+        [Route("{action}/{id}")]
         public async Task<IActionResult> GetOrdersByid([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var order = await repository.Get(id);
+            var order = await repository.GetAll().Include(a => a.CurrentFreelancer).
+                ThenInclude(a => a.ApplicationUser).Include(a => a.Speciality).FirstOrDefaultAsync(a => a.Id == id);
             if (order == null)
             {
                 return NotFound();
@@ -101,7 +104,8 @@ namespace HINVenture.Server.Controllers
 
         // PUT: api/ProductAPI/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, [Bind("Id,Title,Description")] Order order)
+        [Authorize]
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Order order)
         {
             if (!ModelState.IsValid)
             {

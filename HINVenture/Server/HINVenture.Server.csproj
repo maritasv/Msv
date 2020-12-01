@@ -25,6 +25,4 @@
     <ProjectReference Include="..\Client\HINVenture.Client.csproj" />
     <ProjectReference Include="..\Shared\HINVenture.Shared.csproj" />
   </ItemGroup>
-
-
 </Project>

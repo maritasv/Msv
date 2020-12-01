@@ -10,7 +10,7 @@
 }
 else
 {
-<h1>Freelancers orders</h1>
+    <h1>Freelancers orders</h1>
 
     @if (orders == null)
     {
@@ -18,42 +18,40 @@ else
     }
     else
     {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Posted Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in orders)
-                {
-                <tr>
-                    <th>@order.Title</th>
-                    <th>@order.Description</th>
-                    <th>@order.PostedDate</th>
-                    <td>
-                        <a asp-page="./Edit" asp-route-id="@order.Id" href="OrderInfo">Edit</a> |
-                        <a asp-page="./Delete" asp-route-id="@order.Id" href="">Cancel</a>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
+        <div class="m-2">
+            <table class="table table-sm table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Posted Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in orders)
+                    {
+                        <tr>
+                            <th>@order.Title</th>
+                            <th>@order.Description</th>
+                            <th>@order.PostedDate</th>
+                            <td>
+                                <a href="@GetEditUrl(order.Id)" class="btn btn-primary m-1">Edit</a>
+                                <a href="" class="btn btn-danger m-1">Cancel</a>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 }
 
 @code {
 
-
-    string id = "0";
-    bool loadFailed;
-
     bool isAccessDenied = false;
     private List<Order> orders;
-    private Order order;
-    string role;
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,4 +63,6 @@ else
             orders = await _httpClient.GetFromJsonAsync<List<Order>>($"api/OrderApi/GetOrdersByFreelancer/{state.User.Identity.Name}");
         }
     }
+    public string GetEditUrl(int id) => $"/OrderInfo/{id}";
+
 }

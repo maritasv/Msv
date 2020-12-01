@@ -5,7 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20201130224245_RolesT2Init.cs" />
+    <Compile Remove="Migrations\20201130224245_RolesT2Init.Designer.cs" />
+    <Compile Remove="Migrations\20201201081932_BackToInit.cs" />
+    <Compile Remove="Migrations\20201201081932_BackToInit.Designer.cs" />
+    <Compile Remove="Migrations\20201201082437_BackToInit.cs" />
+    <Compile Remove="Migrations\20201201082437_BackToInit.Designer.cs" />
+    <Compile Remove="Migrations\20201201083028_BackToInit.cs" />
+    <Compile Remove="Migrations\20201201083028_BackToInit.Designer.cs" />
+    <Compile Remove="Migrations\20201201084641_Test.cs" />
+    <Compile Remove="Migrations\20201201084641_Test.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.9">
