@@ -20,12 +20,14 @@ namespace HINVenture.Server.Controllers
         private IRepository<Order> repository;
         private IRepository<Speciality> _specRepository;
         private UserManager<ApplicationUser> _userManager;
+        private IUserRepository<FreelancerUser> _freelancerRepository;
 
-        public OrderApiController(IRepository<Order> repository, IRepository<Speciality> specRepository, UserManager<ApplicationUser> userManager )
+        public OrderApiController(IRepository<Order> repository, IRepository<Speciality> specRepository, UserManager<ApplicationUser> userManager, IUserRepository<FreelancerUser> freelancerRepository)
         {
             this.repository = repository;
             _userManager = userManager;
             _specRepository = specRepository;
+            _freelancerRepository = freelancerRepository;
         }
 
         // GET: api/ProductAPI
@@ -41,6 +43,50 @@ namespace HINVenture.Server.Controllers
                 .Where(a => a.Customer.ApplicationUser.UserName == userName);
             return result;
         }
+
+
+        // GET: api/ProductAPI
+        [HttpPost]
+        [Route("{action}/{userName}")]
+        [Authorize]
+        public IEnumerable<Order> AcceptOrder(Order order, string userName)
+        {
+            var result = repository.GetAll()
+                .Include(a => a.Customer)
+                .ThenInclude(a => a.ApplicationUser)
+                .Include(a => a.Speciality)
+                .Where(a => a.Customer.ApplicationUser.UserName == userName);
+            return result;
+        }
+
+        // GET: api/ProductAPI
+        [HttpGet]
+        [Route("{action}/{userName}")]
+        [Authorize]
+        public IEnumerable<Order> GetNewOrdersAvailableForFreelancer(string userName)
+        {
+            var result = repository.GetAll()
+                .Include(a => a.Customer)
+                .ThenInclude(a => a.ApplicationUser)
+                .Include(a=>a.Speciality)
+                .Where(a => a.CurrentFreelancer == null);
+
+            FreelancerUser user =_freelancerRepository.GetAll().Include(a=>a.ApplicationUser)
+                .Include(a=>a.Specs)
+                .FirstOrDefault(a => a.ApplicationUser.UserName == userName);
+
+            List<Order> resultOrders = new List<Order>();
+            foreach (var order in  result)
+            {
+                if (user.Specs.FirstOrDefault(a => a.SpecialityId == order.SpecialityId) != null)
+                {
+                    resultOrders.Add(order);
+                }
+            }
+            return resultOrders;
+        }
+
+
 
         // POST: api/ProductAPI
         [HttpPost("{userName}")]
@@ -101,6 +147,21 @@ namespace HINVenture.Server.Controllers
             }
             return Ok(order);
         }
+
+        [HttpGet]
+        [Route("{action}/{orderId}/{username}")]
+        public async Task<IActionResult> AssignOrderToFreelancer(int orderId, string username)
+        {
+            var order = await repository.Get(orderId);
+            order.CurrentFreelancer = _freelancerRepository.GetAll()
+                .Include(a => a.ApplicationUser)
+                .FirstOrDefault(a => a.ApplicationUser.UserName == username);
+            await repository.Update(order);
+            
+            return Ok();
+        }
+
+
 
         // PUT: api/ProductAPI/5
         [HttpPut("{id}")]

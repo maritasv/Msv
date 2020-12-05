@@ -1,0 +1,110 @@
+﻿@page "/AcceptOrder/{id:int}"
+@inject HttpClient _httpClient
+@inject NavigationManager _navigationManager
+@inject ApiAuthenticationStateProvider _stateProvider
+@using Microsoft.AspNetCore.SignalR.Client
+
+
+@if (isAccessGranted == false || order==null)
+{
+    <p>Access denied</p>
+}
+else
+{
+    <h3>Do you want to accept the order @Id ?</h3>
+
+    <hr />
+    <div class="form-group row">
+        <label for="firstName" class="col-sm-2 col-form-label">
+            Title
+        </label>
+        <div class="col-sm-10">
+            @if (state.User.IsInRole("freelancer"))
+            {
+                <input type="text" id="title" class="form-control" placeholder="Title" readonly="readonly"
+                       @bind-value="@order.Title" />
+            }
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="description" class="col-sm-2 col-form-label">
+            Description
+        </label>
+        <div class="col-sm-10">
+            @if (state.User.IsInRole("freelancer"))
+            {
+                <input type="text" id="description" class="form-control" readonly="readonly" placeholder="Description"
+                       @bind-value="@order.Description" />
+            }
+            
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <label for="code" class="col-sm-2 col-form-label">
+            Speciality
+        </label>
+        <div class="col-sm-10">
+            @order.Speciality.Name
+
+        </div>
+    </div>
+    <a @onclick="@(async ()=>await  Accept())" class="btn btn-primary m-1">Accept</a>
+    <a href="freelancersorders" class="btn btn-danger m-1">Cancel</a>
+
+}
+
+
+@code {
+
+    private Order order = new Order();
+    List<Speciality> specs;
+
+    string messageError = "";
+
+    AuthenticationState state;
+    private HubConnection hubConnection;
+
+    bool isAccessGranted = false;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        state = await _stateProvider.GetAuthenticationStateAsync();
+
+        if (state.User.IsInRole("freelancer"))
+        {
+            await LoadData();
+        }
+    }
+
+
+    async Task LoadData()
+    {
+        isAccessGranted = true;
+        var responce = await _httpClient.GetAsync($"api/OrderApi/GetOrdersByid/{Id}");
+        string json = await responce.Content.ReadAsStringAsync();
+        order = JsonConvert.DeserializeObject<Order>(json);
+    }
+
+
+    protected async Task Accept()
+    {
+        var result = await _httpClient.GetAsync($"api/OrderApi/AssignOrderToFreelancer/{order.Id}/{state.User.Identity.Name}");
+
+        if (result.IsSuccessStatusCode)
+        {
+            _navigationManager.NavigateTo($"FreelancersOrders");
+        }
+        else
+        {
+            messageError = "Error, try again";
+        }
+    }
+
+
+}

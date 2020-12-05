@@ -1,23 +1,36 @@
 ﻿@page "/freelancersorders"
 @using Microsoft.AspNetCore.Authorization
+@using System.Runtime.CompilerServices
 @inject HttpClient _httpClient
 @inject ApiAuthenticationStateProvider _StateProvider
 
 
-@if (isAccessDenied == false)
+@if (isAccessGranted == false)
 {
     <p>Access denied</p>
 }
 else
 {
-    <h1>Freelancers orders</h1>
+
+    <input class="active btn" type="button" value="My orders" @onclick="@(async ()=>await  LoadMyOrders())" />
+    <input class="active btn" type="button" value="Available orders" @onclick="@(async ()=>await LoadNewOrders())" />
+
 
     @if (orders == null)
     {
-        <p><em>Loading...</em></p>
+        <p>loading</p>
     }
     else
     {
+        if (isShowMyOrders)
+        {
+
+            <h1>My orders</h1>
+        }
+        else
+        {
+            <h1>Available orders</h1>
+        }
         <div class="m-2">
             <table class="table table-sm table-striped table-bordered">
                 <thead>
@@ -36,9 +49,15 @@ else
                             <th>@order.Description</th>
                             <th>@order.PostedDate</th>
                             <td>
-                                <a href="@GetEditUrl(order.Id)" class="btn btn-primary m-1">Edit</a>
-                                <a href="" class="btn btn-danger m-1">Cancel</a>
-
+                                @if (!isShowMyOrders)
+                                {
+                                    <a href="@AcceptOrder(order.Id)" class="btn btn-primary m-1">View Order</a>
+                                }
+                                else
+                                {
+                                    <a href="@GetEditUrl(order.Id)" class="btn btn-primary m-1">Edit</a>
+                                    <a href="" class="btn btn-danger m-1">Cancel</a>
+                                }
                             </td>
                         </tr>
                     }
@@ -50,19 +69,43 @@ else
 
 @code {
 
-    bool isAccessDenied = false;
+    bool isAccessGranted = true;
     private List<Order> orders;
+    AuthenticationState state;
+
+    bool isShowMyOrders = true;
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await _StateProvider.GetAuthenticationStateAsync();
+        state = await _StateProvider.GetAuthenticationStateAsync();
 
         if (state.User.IsInRole("freelancer"))
         {
-            isAccessDenied = true;
-            orders = await _httpClient.GetFromJsonAsync<List<Order>>($"api/OrderApi/GetOrdersByFreelancer/{state.User.Identity.Name}");
+            isAccessGranted = true;
+            await LoadMyOrders();
         }
     }
+
+    async Task LoadMyOrders()
+    {
+        var responce = await _httpClient.GetAsync($"api/OrderApi/GetOrdersByFreelancer/{state.User.Identity.Name}");
+        string json = await responce.Content.ReadAsStringAsync();
+        orders = JsonConvert.DeserializeObject<List<Order>>(json);
+        isShowMyOrders = true;
+    }
+
+    async Task LoadNewOrders()
+    {
+        var responce = await _httpClient.GetAsync($"api/OrderApi/GetNewOrdersAvailableForFreelancer/{state.User.Identity.Name}");
+        string json = await responce.Content.ReadAsStringAsync();
+        orders = JsonConvert.DeserializeObject<List<Order>>(json);
+        isShowMyOrders = false;
+    }
+
+
+
     public string GetEditUrl(int id) => $"/OrderInfo/{id}";
+
+    public string AcceptOrder(int id) => $"/AcceptOrder/{id}";
 
 }

@@ -57,6 +57,7 @@ else
                 <th>Title</th>
                 <th>Description</th>
                 <th>Speciality</th>
+                <th>Actions</th>
             </tr>
         </thead>
     </table>
@@ -80,6 +81,9 @@ else
                             {
                                 <span>@order.Speciality.Name</span>
                             }
+                        </th>
+                        <th>
+                            <a href="OrderInfo/@order.Id">View</a>
                         </th>
                     </tr>
                 }

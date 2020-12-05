@@ -20,8 +20,15 @@ else
             Title
         </label>
         <div class="col-sm-10">
-            <input type="text" id="title" class="form-control" placeholder="Title" readonly="readonly"
-                   @bind-value="@order.Title" />
+            @if (state.User.IsInRole("freelancer"))
+            {
+                <input type="text" id="title" class="form-control" placeholder="Title" readonly="readonly"
+                       @bind-value="@order.Title"/>
+            }
+            @if (state.User.IsInRole("customer"))
+            {
+                <p>@order.Title</p>
+            }
         </div>
     </div>
 
@@ -30,8 +37,15 @@ else
             Description
         </label>
         <div class="col-sm-10">
-            <input type="text" id="description" class="form-control" placeholder="Description"
-                   @bind-value="@order.Description" />
+            @if (state.User.IsInRole("freelancer"))
+            {
+                <input type="text" id="description" class="form-control" placeholder="Description"
+                       @bind-value="@order.Description"/>
+            }
+            @if (state.User.IsInRole("customer"))
+            {
+                <p>@order.Description</p>
+            }
         </div>
     </div>
     <div class="form-group row">
@@ -82,12 +96,12 @@ else
     {
         state = await _stateProvider.GetAuthenticationStateAsync();
 
-        if (state.User.IsInRole("freelancer"))
+        if (state.User.IsInRole("freelancer") || state.User.IsInRole("customer"))
         {
 
             hubConnection = new HubConnectionBuilder()
-           .WithUrl(_navigationManager.ToAbsoluteUri("/broadcastHub"))
-           .Build();
+            .WithUrl(_navigationManager.ToAbsoluteUri("/broadcastHub"))
+            .Build();
 
             hubConnection.On("ReceiveMessage", () =>
             {
@@ -99,6 +113,7 @@ else
 
             await LoadData();
         }
+
         void CallLoadData()
         {
             Task.Run(async () =>
@@ -144,7 +159,10 @@ else
         if (result.IsSuccessStatusCode)
         {
             //_navigationManager.NavigateTo($"OrderInfo/{Id}");
-            _navigationManager.NavigateTo($"FreelancersOrders");
+            if (state.User.IsInRole("freelancer"))
+                _navigationManager.NavigateTo($"FreelancersOrders");
+            if (state.User.IsInRole("customer"))
+                _navigationManager.NavigateTo($"CustomerOrder");
         }
         else
         {
