@@ -20,9 +20,9 @@ namespace HINVenture.Shared.Models.ViewModels
             throw new NotImplementedException();
         }
 
-        public Task<FreelancerUser> Get(string id)
+        public async Task<FreelancerUser> Get(string id)
         {
-            throw new NotImplementedException();
+            return await _db.FreelancerUsers.FindAsync(id);
         }
 
         public IQueryable<FreelancerUser> GetAll()

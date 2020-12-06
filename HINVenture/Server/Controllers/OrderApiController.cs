@@ -139,14 +139,20 @@ namespace HINVenture.Server.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var order = await repository.GetAll().Include(a => a.CurrentFreelancer).
-                ThenInclude(a => a.ApplicationUser).Include(a => a.Speciality).FirstOrDefaultAsync(a => a.Id == id);
+            var order = await repository.GetAll()
+                .Include(a => a.CurrentFreelancer)
+                .ThenInclude(a => a.ApplicationUser)
+                .Include(a => a.Customer)
+                .ThenInclude(a => a.ApplicationUser)
+                .Include(a => a.Speciality)
+                .FirstOrDefaultAsync(a => a.Id == id);
             if (order == null)
             {
                 return NotFound();
             }
             return Ok(order);
         }
+
 
         [HttpGet]
         [Route("{action}/{orderId}/{username}")]
@@ -160,7 +166,6 @@ namespace HINVenture.Server.Controllers
             
             return Ok();
         }
-
 
 
         // PUT: api/ProductAPI/5

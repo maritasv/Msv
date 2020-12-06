@@ -8,36 +8,34 @@ using System.Threading.Tasks;
 
 namespace HINVenture.Shared.Models
 {
-    public class MessageRepository : IRepository<Message>
+    public class CustomerRepository : IUserRepository<CustomerUser>
     {
         private readonly ApplicationDbContext _db;
-        public MessageRepository(ApplicationDbContext db)
+        public CustomerRepository(ApplicationDbContext db)
         {
             this._db = db;
         }
-
-        public async Task Create(Message p)
-        {
-            _db.Messages.Add(p);
-            await _db.SaveChangesAsync();
-        }
-
-        public Task<Message> Get(int id)
+        public Task Create(CustomerUser p)
         {
             throw new NotImplementedException();
         }
 
-        public IQueryable<Message> GetAll()
+        public async Task<CustomerUser> Get(string id)
         {
-            return _db.Messages;
+            return await _db.CustomerUsers.FindAsync(id);
         }
 
-        public Task Remove(Message entity)
+        public IQueryable<CustomerUser> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Task Update(Message entity)
+        public Task Remove(CustomerUser entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Update(CustomerUser entity)
         {
             throw new NotImplementedException();
         }

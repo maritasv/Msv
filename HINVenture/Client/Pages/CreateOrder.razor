@@ -3,10 +3,12 @@
 @inject NavigationManager _navigationManager
 @inject ApiAuthenticationStateProvider _stateProvider
 @inject HttpClient Http
+@using Microsoft.AspNetCore.SignalR.Client
 <h3>Create Order</h3>
 
 
 @code {
+    private HubConnection hubConnection;
     Order order = new Order();
     string messageError = "";
 
@@ -17,16 +19,22 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         state = await _stateProvider.GetAuthenticationStateAsync();
         if (state.User.IsInRole("customer"))
         {
+
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(_navigationManager.ToAbsoluteUri("/broadcastHub"))
+                .Build();
+            await hubConnection.StartAsync();
             isAccessDenied = true;
             var responce = await Http.GetAsync($"api/Specialities/GetAllSpecialities");
             string json = await responce.Content.ReadAsStringAsync();
             specs = JsonConvert.DeserializeObject<List<Speciality>>(json);
             SelectedSpec = specs.First();
-        }
 
+        }
     }
 
     Speciality SelectedSpec;
@@ -36,6 +44,7 @@
         messageError = "";
         order.SpecialityId = SelectedSpec.Id;
         var result = await _httpClient.PostAsJsonAsync($"api/OrderApi/{state.User.Identity.Name}", order);
+        if (IsConnected) await SendMessage();
 
         if (result.IsSuccessStatusCode)
         {
@@ -45,6 +54,16 @@
         {
             messageError = "Error, try again";
         }
+    }
+
+    Task SendMessage() => hubConnection.SendAsync("SendMessage");
+
+    public bool IsConnected =>
+        hubConnection.State == HubConnectionState.Connected;
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
     }
 
 }

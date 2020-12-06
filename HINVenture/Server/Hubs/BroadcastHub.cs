@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
 namespace HINVenture.Server.Hubs
 {
-    public class ChatHub : Hub
+    public class BroadcastHub : Hub
     {
         public async Task SendMessage()
         {

@@ -10,6 +10,7 @@ namespace HINVenture.Shared.Models.Entities
         public virtual Order Order { get; set; }
         public virtual CustomerUser Customer { get; set; }
         public virtual FreelancerUser Freelancer { get; set; }
+        public string SenderUsername { get; set; }
         public DateTime PostedDate { get; set; }
         public string Text { get; set; }
 	}

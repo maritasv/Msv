@@ -23,7 +23,7 @@ else
             @if (state.User.IsInRole("freelancer"))
             {
                 <input type="text" id="title" class="form-control" placeholder="Title" readonly="readonly"
-                       @bind-value="@order.Title"/>
+                       @bind-value="@order.Title" />
             }
             @if (state.User.IsInRole("customer"))
             {
@@ -40,7 +40,7 @@ else
             @if (state.User.IsInRole("freelancer"))
             {
                 <input type="text" id="description" class="form-control" placeholder="Description"
-                       @bind-value="@order.Description"/>
+                       @bind-value="@order.Description" />
             }
             @if (state.User.IsInRole("customer"))
             {
@@ -75,9 +75,30 @@ else
     <a @onclick="EditOrder" class="btn btn-primary m-1">Edit</a>
     <a href="freelancersorders" class="btn btn-danger m-1">Cancel</a>
 
+    <h3 style="margin-top: 20px;">Comments</h3>
+
+    <div class="form-group row" style="margin-top: 20px;">
+
+        <div class="col-sm-10">
+            <input type="text" @bind-value="@message.Text" name="EditComment" class="form-control" placeholder="Comment" />
+        </div>
+        <button @onclick="EditComment" type="submit" class="btn btn-primary m-1">Add comment</button>
+    </div>
+
+    <ul>
+        @foreach (var mess in messages)
+        {
+            <li>@mess.SenderUsername:  @mess.Text  @mess.PostedDate</li>
+
+        }
+    </ul>
+}
+
 }
 
 @code {
+    private List<Message> messages;
+    private Message message = new Message();
 
     private Order order = new Order();
     List<Speciality> specs;
@@ -94,40 +115,64 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(_navigationManager.ToAbsoluteUri("/broadcastHub"))
+            .Build();
+
+        hubConnection.On("ReceiveMessage", () =>
+        {
+            CallLoadData();
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+
+        await LoadData();
+
+    }
+    Task SendMessage() => hubConnection.SendAsync("SendMessage");
+
+    public bool IsConnected =>
+        hubConnection.State == HubConnectionState.Connected;
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
+    }
+
+    void CallLoadData()
+    {
+        Task.Run(async () =>
+        {
+            await LoadData();
+        });
+    }
+
+    async Task LoadData()
+    {
         state = await _stateProvider.GetAuthenticationStateAsync();
 
         if (state.User.IsInRole("freelancer") || state.User.IsInRole("customer"))
         {
 
-            hubConnection = new HubConnectionBuilder()
-            .WithUrl(_navigationManager.ToAbsoluteUri("/broadcastHub"))
-            .Build();
-
-            hubConnection.On("ReceiveMessage", () =>
-            {
-                CallLoadData();
-                StateHasChanged();
-            });
-
-            await hubConnection.StartAsync();
-
-            await LoadData();
-        }
-
-        void CallLoadData()
-        {
-            Task.Run(async () =>
-            {
-                await LoadData();
-            });
-        }
-
-        async Task LoadData()
-        {
-            isAccessDenied = true;
             var responce = await _httpClient.GetAsync($"api/OrderApi/GetOrdersByid/{Id}");
             string json = await responce.Content.ReadAsStringAsync();
             order = JsonConvert.DeserializeObject<Order>(json);
+
+            if (state.User.IsInRole("freelancer") && order.CurrentFreelancer.ApplicationUser.UserName == state.User.Identity.Name)
+            {
+                isAccessDenied = true;
+            }
+
+            if (state.User.IsInRole("customer") && order.Customer.ApplicationUser.UserName == state.User.Identity.Name)
+            {
+                isAccessDenied = true;
+            }
+            if (isAccessDenied == false) return;
+
+            var resp = await _httpClient.GetAsync($"api/Comments/GetMessagesByOrder/{Id}");
+            string js = await resp.Content.ReadAsStringAsync();
+            messages = JsonConvert.DeserializeObject<List<Message>>(js);
 
             responce = await _httpClient.GetAsync($"api/Specialities/GetAllSpecialities");
             json = await responce.Content.ReadAsStringAsync();
@@ -135,15 +180,8 @@ else
 
             SelectedSpec = specs.First();
         }
-    }
-    public bool IsConnected =>
-            hubConnection.State == HubConnectionState.Connected;
 
-    public void Dispose()
-    {
-        _ = hubConnection.DisposeAsync();
     }
-
 
     Speciality SelectedSpec;
     protected async Task EditOrder()
@@ -155,21 +193,35 @@ else
 
         var content = new StringContent(objAsJson.ToString(), Encoding.UTF8, "application/json");
         var result = await _httpClient.PutAsync($"api/OrderApi/{Id}", content);
+        if (result.IsSuccessStatusCode)
+        {
+            _navigationManager.NavigateTo($"FreelancersOrders");
+        }
+        else
+        {
+            messageError = "Error, try again";
+        }
+
+    }
+    protected async Task EditComment()
+    {
+        message.Order = order;
+        message.SenderUsername = state.User.Identity.Name;
+
+        string objAsJson = JsonConvert.SerializeObject(message, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+        var content = new StringContent(objAsJson.ToString(), Encoding.UTF8, "application/json");
+        var result = await _httpClient.PostAsync($"api/Comments/", content);
+
+        if (IsConnected) await SendMessage();
 
         if (result.IsSuccessStatusCode)
         {
-            //_navigationManager.NavigateTo($"OrderInfo/{Id}");
-            if (state.User.IsInRole("freelancer"))
-                _navigationManager.NavigateTo($"FreelancersOrders");
-            if (state.User.IsInRole("customer"))
-                _navigationManager.NavigateTo($"CustomerOrder");
         }
         else
         {
             messageError = "Error, try again";
         }
     }
-
-
 }
+
 

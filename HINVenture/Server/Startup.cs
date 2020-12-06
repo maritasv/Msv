@@ -33,7 +33,6 @@ namespace HINVenture.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddSignalR();
@@ -70,12 +69,16 @@ namespace HINVenture.Server
                 });
             services.AddTransient<IRepository<Order>, OrderRepository>();
             services.AddTransient<IUserRepository<FreelancerUser>, FreelancersRepository>();
+            services.AddTransient<IUserRepository<CustomerUser>, CustomerRepository>();
             services.AddTransient<IRepository<Speciality>, SpecialitiesRepository>();
+            services.AddTransient<IRepository<Message>, MessageRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -91,7 +94,6 @@ namespace HINVenture.Server
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
-
             app.UseRouting();
 
 
@@ -102,7 +104,7 @@ namespace HINVenture.Server
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/broadcastHub");
+                endpoints.MapHub<BroadcastHub>("/broadcastHub");
                 endpoints.MapFallbackToFile("index.html");
             });
         }
