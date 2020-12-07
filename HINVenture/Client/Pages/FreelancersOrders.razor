@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using System.Runtime.CompilerServices
 @inject HttpClient _httpClient
+@inject NavigationManager _navigationManager
 @inject ApiAuthenticationStateProvider _StateProvider
 
 
@@ -69,6 +70,7 @@ else
 
 @code {
 
+    private HubConnection hubConnection;
     bool isAccessGranted = true;
     private List<Order> orders;
     AuthenticationState state;
@@ -77,15 +79,49 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(_navigationManager.ToAbsoluteUri("/broadcastHub"))
+            .Build();
+
+        hubConnection.On("ReceiveMessage", () =>
+        {
+            CallLoadData();
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+
+        await LoadData();
+    }
+    private void CallLoadData()
+    {
+        Task.Run(async () =>
+        {
+            await LoadData();
+        });
+    }
+    protected async Task LoadData()
+    {
+
         state = await _StateProvider.GetAuthenticationStateAsync();
 
         if (state.User.IsInRole("freelancer"))
         {
             isAccessGranted = true;
             await LoadMyOrders();
+            await LoadNewOrders();
+            StateHasChanged();
         }
+
     }
 
+    public bool IsConnected =>
+        hubConnection.State == HubConnectionState.Connected;
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
+    }
     async Task LoadMyOrders()
     {
         var responce = await _httpClient.GetAsync($"api/OrderApi/GetOrdersByFreelancer/{state.User.Identity.Name}");
@@ -102,10 +138,8 @@ else
         isShowMyOrders = false;
     }
 
-
-
     public string GetEditUrl(int id) => $"/OrderInfo/{id}";
 
     public string AcceptOrder(int id) => $"/AcceptOrder/{id}";
 
-}
+} 
