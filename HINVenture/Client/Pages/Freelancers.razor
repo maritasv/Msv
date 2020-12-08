@@ -54,7 +54,7 @@ else
             @foreach (var freel in freels)
             {
                 <tr>
-                    <td>@freel.ApplicationUser.FullName </td>
+                    <td>@freel.ApplicationUser.FullName</td>
                     <th>
                             @freel.Specs.Name
                     </th>
@@ -68,7 +68,6 @@ else
 }
 
 @code {
-
     bool isAccessDenied = false;
     private List<FreelancerUser> freels;
     private List<Speciality> specialities;

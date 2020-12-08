@@ -72,13 +72,15 @@ else
             </MatRadioGroup>
         </div>
     </div>
+
+
     <div class="form-group row">
-        <label class="col-sm-2 col-form-label">
-            Rate
+        <label for="code" class="col-sm-2 col-form-label">
+            Speciality
         </label>
-    <div class="col-sm-10">
-        @if (state.User.IsInRole("customer"))
-        {
+        <div class="col-sm-10">
+           @if ( state.User.IsInRole("customer"))
+            {
             <MatRadioGroup @bind-Value="@order.Rate" Items="@rates">
                 <ItemTemplate>
                     <div>
@@ -86,23 +88,22 @@ else
                     </div>
                 </ItemTemplate>
             </MatRadioGroup>
-
-        }
-        else
-        {
-            @order.Rate
-        }
+            }
+           else
+           {
+               @order.Rate
+           }
         </div>
     </div>
 
     <a @onclick="EditOrder" class="btn btn-primary m-1">Edit</a>
-    if (state.User.IsInRole("freelancer"))
+    @if (state.User.IsInRole("freelancer"))
     {
         <a href="freelancersorders" class="btn btn-danger m-1">Cancel</a>
     }
-    if (state.User.IsInRole("customer"))
+    @if (state.User.IsInRole("customer"))
     {
-        <a href="customerOrder" class="btn btn-danger m-1">Cancel</a>
+        <a href="customersorder" class="btn btn-danger m-1">Cancel</a>
     }
 
     <h3 style="margin-top: 20px;">Comments</h3>
@@ -110,16 +111,11 @@ else
     <div class="form-group row" style="margin-top: 20px;">
 
         <div class="col-sm-10">
-            <input type="text" @bind-value="@message.Text" name="EditComment" class="form-control" placeholder="Comment" />
+            <input type="text" @bind="@message.Text" class="form-control" placeholder="Comment" />
         </div>
 
-    </div>
+        <input type="button" value="Add Comment" @onclick="@(async () => await AddComment())" />
 
-    <div class="form-group row" style="margin-top: 20px;">
-        <div class="col-sm-10">
-            <input type="text" @bind-value="@message.Text" name="EditComment" class="form-control" placeholder="Comment" />
-        </div>
-        <button @onclick="EditComment" type="submit" class="btn btn-primary m-1">Add comment</button>
     </div>
 
     <ul>
@@ -129,8 +125,6 @@ else
 
         }
     </ul>
-}
-
 }
 
 @code {
@@ -150,7 +144,7 @@ else
     [Parameter]
     public int Id { get; set; }
 
-    int[] rates = new int[] {1,2,3,4,5};
+    int[] rates = new int[] { 1, 2, 3, 4, 5 };
 
     protected override async Task OnInitializedAsync()
     {
@@ -217,7 +211,7 @@ else
             json = await responce.Content.ReadAsStringAsync();
             specs = JsonConvert.DeserializeObject<List<Speciality>>(json);
 
-            SelectedSpec = specs.First();
+            SelectedSpec = specs.Find(a => a.Id == order.Speciality.Id);
         }
 
     }
@@ -225,19 +219,19 @@ else
     Speciality SelectedSpec;
     protected async Task EditOrder()
     {
-        order.Speciality = null;
-        order.SpecialityId = SelectedSpec.Id;
+
+        order.Speciality = SelectedSpec;
 
         string objAsJson = JsonConvert.SerializeObject(order, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 
         var content = new StringContent(objAsJson.ToString(), Encoding.UTF8, "application/json");
-        var result = await _httpClient.PutAsync($"api/OrderApi/{Id}", content);
+        var result = await _httpClient.PutAsync($"api/OrderApi/{order.Id}", content);
         if (result.IsSuccessStatusCode)
         {
             if (state.User.IsInRole("freelancer"))
                 _navigationManager.NavigateTo($"FreelancersOrders");
             if (state.User.IsInRole("customer"))
-                _navigationManager.NavigateTo($"CustomerOrder");
+                _navigationManager.NavigateTo($"CustomersOrder");
         }
         else
         {
@@ -245,7 +239,7 @@ else
         }
 
     }
-    protected async Task EditComment()
+    protected async Task AddComment()
     {
         message.Order = order;
         message.SenderUsername = state.User.Identity.Name;

@@ -189,6 +189,7 @@ namespace HINVenture.Server.Controllers
 
             try
             {
+                order.Speciality = await _specRepository.Get(order.Speciality.Id);
                 await repository.Update(order);
             }
             catch (DbUpdateConcurrencyException)
