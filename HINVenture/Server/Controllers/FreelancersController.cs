@@ -14,8 +14,12 @@ namespace HINVenture.Server.Controllers
     public class FreelancersController : ControllerBase
     {
         protected IUserRepository<FreelancerUser> _freelancersRepository;
-        public FreelancersController(IUserRepository<FreelancerUser> freelancersRepository)
+        protected IRepository<Speciality> _specialitiesRepository;
+        public FreelancersController(IUserRepository<FreelancerUser> freelancersRepository,
+            IRepository<Speciality> specialitiesRepository
+            )
         {
+            _specialitiesRepository = specialitiesRepository;
             _freelancersRepository = freelancersRepository;
         }
 
@@ -24,7 +28,7 @@ namespace HINVenture.Server.Controllers
         [Authorize]
         public async Task<IEnumerable<FreelancerUser>> GetAllFreelancers()
         {
-            return await _freelancersRepository.GetAll().Include(a => a.ApplicationUser).Include(a => a.Specs).ThenInclude(a => a.Speciality).ToListAsync();
+            return await _freelancersRepository.GetAll().Include(a => a.ApplicationUser).Include(a => a.Specs).ToListAsync();
         }
 
         [HttpGet]
@@ -32,8 +36,57 @@ namespace HINVenture.Server.Controllers
         [Authorize]
         public async Task<IEnumerable<FreelancerUser>> GetFreelancersBySpec(int specId)
         {
-            return await _freelancersRepository.GetAll().Where(a => a.Specs.Count(a => a.SpecialityId == specId) != 0)
-                .Include(a => a.ApplicationUser).Include(a => a.Specs).ThenInclude(a => a.Speciality).ToListAsync();
-        }       
+            return await _freelancersRepository.GetAll().Where(a => a.Specs.Id == specId)
+                .Include(a => a.ApplicationUser).Include(a => a.Specs).ToListAsync();
+        }
+
+        // GET: api/Product/5
+        [HttpGet]
+        [Route("{action}/{userName}")]
+        [Authorize]
+        public async Task<IActionResult> GetFreelancerByid([FromRoute] string userName)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var user = await _freelancersRepository.GetAll().
+                Include(a => a.ApplicationUser).
+                Include(a => a.Specs).
+                FirstOrDefaultAsync(a => a.ApplicationUser.UserName == userName);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
+        // PUT: api/ProductAPI/5
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> Put([FromRoute] string id, [FromBody] FreelancerUser user)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != user.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                user.Specs = await _specialitiesRepository.Get(user.Specs.Id);
+                await _freelancersRepository.Update(user);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }

@@ -23,10 +23,6 @@ namespace HINVenture.Shared.Data
             builder.Entity<UserRoles>().HasOne(a => a.User).WithMany(a => a.Roles).HasForeignKey(a => a.UserId);
             builder.Entity<UserRoles>().HasOne(a => a.Role).WithMany(a => a.Users).HasForeignKey(a => a.RoleId);
 
-            builder.Entity<FreelancerSpeciality>().HasKey(a => new { a.FreelancerUserId, a.SpecialityId });
-            builder.Entity<FreelancerSpeciality>().HasOne(a => a.FreelancerUser).WithMany(a => a.Specs).HasForeignKey(a => a.FreelancerUserId);
-            builder.Entity<FreelancerSpeciality>().HasOne(a => a.Speciality).WithMany(a => a.Freelancers).HasForeignKey(a => a.SpecialityId);
-
             builder.Entity<Order>()
                 .HasOne<Speciality>(s => s.Speciality)
                 .WithMany(g => g.Orders)

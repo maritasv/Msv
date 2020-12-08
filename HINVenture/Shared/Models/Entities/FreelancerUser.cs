@@ -11,7 +11,7 @@ namespace HINVenture.Shared.Models.Entities
         public string Id { get; set; }
         public virtual ICollection<Order> CurrentOrders { get; set; }
         public virtual ICollection<OrderProgress> OrderProgresses { get; set; }
-        public virtual ICollection<FreelancerSpeciality> Specs { get; set; }
+        public virtual Speciality Specs { get; set; }
         public virtual ICollection<Message> Messages { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }

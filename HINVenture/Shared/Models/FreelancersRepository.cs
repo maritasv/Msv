@@ -35,9 +35,10 @@ namespace HINVenture.Shared.Models.ViewModels
             throw new NotImplementedException();
         }
 
-        public Task Update(FreelancerUser entity)
+        public async Task Update(FreelancerUser entity)
         {
-            throw new NotImplementedException();
+            _db.FreelancerUsers.Update(entity);
+            await _db.SaveChangesAsync();
         }
     }
 }

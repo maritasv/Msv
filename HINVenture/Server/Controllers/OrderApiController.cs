@@ -78,10 +78,11 @@ namespace HINVenture.Server.Controllers
             List<Order> resultOrders = new List<Order>();
             foreach (var order in  result)
             {
-                if (user.Specs.FirstOrDefault(a => a.SpecialityId == order.SpecialityId) != null)
-                {
-                    resultOrders.Add(order);
-                }
+                if (user.Specs!=null)
+                    if (user.Specs.Id == order.SpecialityId)
+                    {
+                        resultOrders.Add(order);
+                    }
             }
             return resultOrders;
         }
@@ -125,7 +126,10 @@ namespace HINVenture.Server.Controllers
         [Authorize]
         public IEnumerable<Order> GetOrdersByFreelancer(string userName)
         {
-            return repository.GetAll().Include(a => a.CurrentFreelancer).ThenInclude(a => a.ApplicationUser).Where(a => a.CurrentFreelancer.ApplicationUser.UserName == userName);
+            return repository.GetAll().
+                Include(a => a.CurrentFreelancer).
+                ThenInclude(a => a.ApplicationUser).
+                Where(a => a.CurrentFreelancer.ApplicationUser.UserName == userName);
         }
 
 
