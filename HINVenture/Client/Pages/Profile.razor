@@ -64,7 +64,7 @@ else
 
     [Parameter]
     public string Username { get; set; }
-  
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,7 +81,11 @@ else
             json = await responce.Content.ReadAsStringAsync();
             specs = JsonConvert.DeserializeObject<List<Speciality>>(json);
 
-            SelectedSpec = specs.Find(a=>a.Id == user.Specs.Id);
+             SelectedSpec = specs.First();
+           
+             //   SelectedSpec = specs.Find(a=>a.Id == user.Specs.Id);
+
+
         }
     }
 

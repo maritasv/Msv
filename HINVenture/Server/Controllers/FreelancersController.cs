@@ -52,7 +52,7 @@ namespace HINVenture.Server.Controllers
             }
             var user = await _freelancersRepository.GetAll().
                 Include(a => a.ApplicationUser).
-                Include(a => a.Specs).
+             //   Include(a => a.Specs).
                 FirstOrDefaultAsync(a => a.ApplicationUser.UserName == userName);
             if (user == null)
             {
