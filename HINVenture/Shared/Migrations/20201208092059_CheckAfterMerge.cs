@@ -2,6 +2,7 @@
 
 namespace HINVenture.Shared.Migrations
 {
+
     public partial class CheckAfterMerge : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,7 +72,7 @@ namespace HINVenture.Shared.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FreelancerSpeciality", x => new { x.FreelancerUserId, x.SpecialityId });
+                    table.PrimaryKey("PK_FreelancerSpeciality", x => new {x.FreelancerUserId, x.SpecialityId});
                     table.ForeignKey(
                         name: "FK_FreelancerSpeciality_FreelancerUsers_FreelancerUserId",
                         column: x => x.FreelancerUserId,
@@ -88,13 +89,22 @@ namespace HINVenture.Shared.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                columns: new[] {"Id", "ConcurrencyStamp", "Name", "NormalizedName"},
                 values: new object[,]
                 {
-                    { "24e565e1-18d0-4738-aac0-834a2c974397", "10b5aba8-9c42-4059-90f2-96e09e4116e8", "freelancer", "FREELANCER" },
-                    { "a334e068-73c4-4a5d-b697-f3a6c819093d", "47b524c3-6fa3-4de3-b03c-6fac2aa20b89", "customer", "CUSTOMER" },
-                    { "477d180e-63df-4b44-be1c-6aad5a90f5a1", "6d6adc92-bdda-48e1-83c6-1632d123d131", "senior", "SENIOR" },
-                    { "11e00184-1356-42c8-9fd2-c0a4c96e8409", "cff71e52-350e-442f-a198-e781dcf053f9", "admin", "ADMIN" }
+                    {
+                        "24e565e1-18d0-4738-aac0-834a2c974397", "10b5aba8-9c42-4059-90f2-96e09e4116e8", "freelancer",
+                        "FREELANCER"
+                    },
+                    {
+                        "a334e068-73c4-4a5d-b697-f3a6c819093d", "47b524c3-6fa3-4de3-b03c-6fac2aa20b89", "customer",
+                        "CUSTOMER"
+                    },
+                    {
+                        "477d180e-63df-4b44-be1c-6aad5a90f5a1", "6d6adc92-bdda-48e1-83c6-1632d123d131", "senior",
+                        "SENIOR"
+                    },
+                    {"11e00184-1356-42c8-9fd2-c0a4c96e8409", "cff71e52-350e-442f-a198-e781dcf053f9", "admin", "ADMIN"}
                 });
 
             migrationBuilder.CreateIndex(
