@@ -3,6 +3,16 @@
 @inject HttpClient Http
 @inject ApiAuthenticationStateProvider _StateProvider
 
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<style>
+    .sort-th {
+        cursor: pointer;
+    }
+
+    .fa {
+        float: right;
+    }
+</style>
 
 
 @if (isAccessDenied == false)
@@ -22,38 +32,35 @@ else
     }
     else
     {
-      <ul>
-             @foreach (var speciality in specialities )
-             {
-          <li>
-              <input type="checkbox" @onchange="async (eventArgs) => await CheckboxClicked(speciality, eventArgs)" />
-              <label>@speciality.Name</label>
-          </li>
-             }
-        </ul>
 
-        <table class="table">
+        <table class="table table-bordered table-hover">
             <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Specialties</th>
-                    <th>Rate</th>
-                </tr>
+            <tr> 
+                <th class="sort-th" @onclick="@(() => SortTable("Id"))">
+                    Username
+                    <span class="fa @(SetSortIcon("Id"))"></span>
+                </th>
+                <th class="sort-th" @onclick="@(() => SortTable("Price"))">
+                    Specialties
+                    <span class="fa @(SetSortIcon("Price"))"></span>
+                </th>
+                <th class="sort-th" @onclick="@(() => SortTable("Rate"))">
+                    Rating
+                    <span class="fa @(SetSortIcon("Rate"))"></span>
+                </th>
+            </tr>
             </thead>
             <tbody>
-                @foreach (var freel in freels)
-                {
-                    <tr>
-                        <td>@freel.ApplicationUser.FullName</td>
-                        <th>
-                            @foreach (var spec in freel.Specs)
-                            {
-                                <span style="padding-left: 10px">@spec.Speciality.Name</span>
-                            }
-                            </th>
-                        <th>@freel.Rate</th>
-                    </tr>
-                }
+            @foreach (var freel in freels)
+            {
+                <tr>
+                    <td>@freel.ApplicationUser.FullName </td>
+                    <th>
+                            @freel.Specs.Name
+                    </th>
+                    <td>@freel.Rate</td>
+                </tr>
+            }
             </tbody>
         </table>
 
@@ -80,24 +87,42 @@ else
 
         }
     }
-
-    async Task CheckboxClicked(Speciality speciality, ChangeEventArgs checkedValue)
+    private bool isSortedAscending;
+    private string activeSortColumn;
+    private void SortTable(string columnName)
     {
-        if ((bool)checkedValue.Value == true)
+        if (columnName != activeSortColumn)
         {
-            if (!specialities.Contains(speciality))
-            {
-                freels.RemoveAll(a => a.Specs.Count(a => a.SpecialityId == speciality.Id) == 0);
-                freels.AddRange(await Http.GetFromJsonAsync<List<FreelancerUser>>($"api/Freelancers/GetFreelancersBySpec/{speciality.Id}"));
-
-            }
+            freels = freels.OrderBy(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
+            isSortedAscending = true;
+            activeSortColumn = columnName;
         }
         else
         {
-            if (specialities.Contains(speciality))
+            if (isSortedAscending)
             {
-                freels.RemoveAll(a => a.Specs.Count(a => a.SpecialityId == speciality.Id) == 0);
+                freels = freels.OrderByDescending(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
             }
+            else
+            {
+                freels = freels.OrderBy(x => x.GetType().GetProperty(columnName).GetValue(x, null)).ToList();
+            }
+            isSortedAscending = !isSortedAscending;
+        }
+    }
+    private string SetSortIcon(string columnName)
+    {
+        if (activeSortColumn != columnName)
+        {
+            return string.Empty;
+        }
+        if (isSortedAscending)
+        {
+            return "fa-sort-up";
+        }
+        else
+        {
+            return "fa-sort-down";
         }
     }
 }

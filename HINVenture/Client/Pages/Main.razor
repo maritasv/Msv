@@ -1,0 +1,45 @@
+﻿@page "/main"
+@using Microsoft.AspNetCore.Authorization
+@inject HttpClient _httpClient
+@inject NavigationManager _navigationManager
+@inject ApiAuthenticationStateProvider _StateProvider
+
+
+@if (isAccessDenied == false)
+{
+    <p>Access denied</p>
+}
+else
+{
+    <h1>Freelancers orders</h1>
+
+    @if (user == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <a href="@GetProfileUrl(user.ApplicationUser.UserName)" class="btn btn-primary m-1">Your profile</a>
+
+    }
+}
+
+@code {
+
+    bool isAccessDenied;
+    FreelancerUser user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await _StateProvider.GetAuthenticationStateAsync();
+
+        if (state.User.IsInRole("freelancer"))
+        {
+            isAccessDenied = true;
+            user = await _httpClient.GetFromJsonAsync<FreelancerUser>($"api/Freelancers/GetFreelancerByid/{state.User.Identity.Name}");
+
+        }
+    }
+    public string GetProfileUrl(string username) => $"/Profile/{user.ApplicationUser.UserName}";
+
+}

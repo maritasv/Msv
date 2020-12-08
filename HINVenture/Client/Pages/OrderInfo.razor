@@ -80,9 +80,11 @@ else
     <div class="form-group row" style="margin-top: 20px;">
 
         <div class="col-sm-10">
-            <input type="text" @bind-value="@message.Text" name="EditComment" class="form-control" placeholder="Comment" />
+            <input type="text" @bind="@message.Text" class="form-control" placeholder="Comment" />
         </div>
-        <button @onclick="EditComment" type="submit" class="btn btn-primary m-1">Add comment</button>
+
+        <input type="button" value="Add Comment" @onclick="@(async () => await AddComment())" />
+
     </div>
 
     <ul>
@@ -92,8 +94,6 @@ else
 
         }
     </ul>
-}
-
 }
 
 @code {
@@ -203,7 +203,7 @@ else
         }
 
     }
-    protected async Task EditComment()
+    protected async Task AddComment()
     {
         message.Order = order;
         message.SenderUsername = state.User.Identity.Name;
