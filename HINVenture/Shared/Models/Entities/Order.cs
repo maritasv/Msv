@@ -17,7 +17,8 @@ namespace HINVenture.Shared.Models.Entities
         public virtual FreelancerUser CurrentFreelancer { get; set; }
         public int SpecialityId { get; set; }
         public virtual Speciality Speciality { get; set; }
-        public virtual ICollection<OrderProgress> OrderProgreses { get; set; }
+        public virtual ICollection<OrderProgress> OrderProgresses { get; set; }
         public virtual ICollection<Message> Messages { get; set; }
+        public int Rate { get; set; }
     }
 }

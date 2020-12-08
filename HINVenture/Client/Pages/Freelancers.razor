@@ -26,7 +26,7 @@ else
              @foreach (var speciality in specialities )
              {
           <li>
-              <input type="checkbox" @onchange="async (eventArgs) => await CheckboxClicked(speciality, eventArgs)" />
+              <input type="checkbox" @onchange="(async (eventArgs) => await CheckboxClicked(speciality, eventArgs))" />
               <label>@speciality.Name</label>
           </li>
              }
